@@ -1,5 +1,6 @@
 package mfi.clockworkpi.gui.cardpanes;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
@@ -15,6 +16,7 @@ public class SettingsPane extends JDesktopPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JButton switchButton;
+	private JButton exitButton;
 
 	public SettingsPane(SwitchButtonListener switchButtonListener)
 			throws HeadlessException {
@@ -24,8 +26,20 @@ public class SettingsPane extends JDesktopPane implements ActionListener {
 		switchButton.addActionListener(switchButtonListener);
 		switchButton.setName(ClockPane.class.getName());
 
-		this.setBackground(null);
+		exitButton = new JButton("exit");
+		exitButton.setBounds(20, 170, 150, 30);
+		exitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// FIXME
+				System.exit(0);
+			}
+		});
+		exitButton.setName(ClockPane.class.getName());
+
+		this.setBackground(Color.BLACK);
 		this.add(switchButton);
+		this.add(exitButton);
 
 	}
 
