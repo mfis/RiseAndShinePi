@@ -4,7 +4,7 @@ package mfi.clockworkpi.gui.components;
  *
  * @author hansolo
  * Gerrit Grunwald
-*  Twitter @hansolo_
+ * Twitter @hansolo_
  */
 public class AnalogClock extends javax.swing.JComponent implements java.awt.event.ActionListener
 {
