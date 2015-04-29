@@ -9,8 +9,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 
+import mfi.clockworkpi.gui.components.MainFrame;
 import mfi.clockworkpi.listeners.SwitchButtonListener;
-import mfi.clockworkpi.main.CWPMain;
 
 public class SettingsPane extends JDesktopPane implements ActionListener {
 
@@ -54,7 +54,7 @@ public class SettingsPane extends JDesktopPane implements ActionListener {
 
 	@Override
 	public Dimension getPreferredSize() {
-		return (CWPMain.applicationSize);
+		return (MainFrame.applicationSize);
 	}
 
 }
