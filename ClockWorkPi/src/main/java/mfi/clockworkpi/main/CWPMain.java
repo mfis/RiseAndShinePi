@@ -1,11 +1,17 @@
 package mfi.clockworkpi.main;
 
+import java.awt.AWTException;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -47,12 +53,26 @@ public class CWPMain {
 		GraphicsEnvironment ge = GraphicsEnvironment
 				.getLocalGraphicsEnvironment();
 		device = ge.getDefaultScreenDevice();
+		;
+
+		int appPixels = new Double(applicationSize.getHeight()).intValue()
+				* new Double(applicationSize.getWidth()).intValue();
+		int displayPixels = device.getDisplayMode().getWidth() * device.getDisplayMode().getHeight();
 
 		if (device.isFullScreenSupported() && fullScreen) {
 			frame.setUndecorated(true);
 			device.setFullScreenWindow(frame);
+			if(appPixels == displayPixels) {
+				Toolkit toolkit = Toolkit.getDefaultToolkit();
+				Point hotSpot = new Point(0, 0);
+				BufferedImage cursorImage = new BufferedImage(1, 1,
+						BufferedImage.TRANSLUCENT);
+				Cursor invisibleCursor = toolkit.createCustomCursor(cursorImage,
+						hotSpot, "InvisibleCursor");
+				frame.setCursor(invisibleCursor);
+			}
 		}
-
+		
 		JPanel contentPane = new JPanel();
 		contentPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		contentPane.setLayout(new CardLayout());
@@ -72,11 +92,12 @@ public class CWPMain {
 
 	public static void main(String[] args) {
 
+		final boolean windowMode = args != null && args.length > 0
+				&& args[0] != null && args[0].equals(WINDOW_MODE);
+
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				CWPMain cwpMain = new CWPMain();
-				boolean windowMode = args != null && args.length > 0
-						&& args[0]!=null &&  args[0].equals(WINDOW_MODE);
 				cwpMain.setFullScreen(!windowMode);
 				cwpMain.displayGUI();
 			}

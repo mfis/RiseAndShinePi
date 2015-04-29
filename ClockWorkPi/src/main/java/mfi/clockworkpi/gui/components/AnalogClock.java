@@ -1,5 +1,10 @@
 package mfi.clockworkpi.gui.components;
 
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Robot;
+import java.awt.event.KeyEvent;
+
 /**
  *
  * @author hansolo Gerrit Grunwald Twitter @hansolo_
@@ -38,15 +43,11 @@ public class AnalogClock extends javax.swing.JComponent implements
 	};
 
 	private TYPE type = TYPE.DARK;
-	private static final String TIMEOFDAY_PROPERTY = "timeOfDay";
-	private int timeOfDay = 0;
+	private java.awt.Color currentMinuteTickmarkColor;
 	private java.awt.Color currentForegroundColor;
-	private java.awt.Color[] currentBackgroundColor;
 	private java.awt.geom.Point2D center;
 	private int timeZoneOffsetHour = 0;
 	private int timeZoneOffsetMinute = 0;
-	private static final String DAYOFFSET_PROPERTY = "dayOffset";
-	private int dayOffset = 0;
 	private int hour;
 	private int minute;
 	boolean am = (java.util.Calendar.getInstance()
@@ -115,6 +116,7 @@ public class AnalogClock extends javax.swing.JComponent implements
 		this.smallTick = new java.awt.geom.Rectangle2D.Double(center.getX()
 				- (SMALL_TICK_WIDTH / 2), SMALL_TICK_HEIGHT, SMALL_TICK_WIDTH,
 				SMALL_TICK_HEIGHT);
+		this.currentMinuteTickmarkColor = Color.GRAY;
 
 		// Hour tick mark
 		final double BIG_TICK_WIDTH = getWidth() * 0.0363636;
@@ -126,20 +128,12 @@ public class AnalogClock extends javax.swing.JComponent implements
 		switch (type) {
 		case LIGHT:
 			this.currentForegroundColor = java.awt.Color.BLACK;
-			this.currentBackgroundColor = new java.awt.Color[] {
-					new java.awt.Color(0xF7F7F7), new java.awt.Color(0xF0F0F0) };
 			break;
-
 		case DARK:
 			this.currentForegroundColor = java.awt.Color.WHITE;
-			this.currentBackgroundColor = new java.awt.Color[] {
-					new java.awt.Color(0x3E3B32), new java.awt.Color(0x232520) };
 			break;
-
 		default:
 			this.currentForegroundColor = java.awt.Color.WHITE;
-			this.currentBackgroundColor = new java.awt.Color[] {
-					new java.awt.Color(0x3E3B32), new java.awt.Color(0x232520) };
 			break;
 		}
 		repaint(0, 0, getWidth(), getHeight());
@@ -265,34 +259,8 @@ public class AnalogClock extends javax.swing.JComponent implements
 	private void createBackgroundImage(java.awt.Graphics2D g2,
 			java.awt.geom.AffineTransform oldTransform) {
 
-		// Draw clock background
-		final java.awt.geom.Point2D LIGHT_START = new java.awt.geom.Point2D.Float(
-				0, 0);
-		final java.awt.geom.Point2D LIGHT_STOP = new java.awt.geom.Point2D.Float(
-				0, getHeight());
-		final float[] LIGHT_FRACTIONS = { 0.0f, 1.0f };
-		final java.awt.Color[] LIGHT_COLORS = { new java.awt.Color(0x000000),
-				new java.awt.Color(0x645E54) };
-		final java.awt.LinearGradientPaint LIGHT_GRADIENT = new java.awt.LinearGradientPaint(
-				LIGHT_START, LIGHT_STOP, LIGHT_FRACTIONS, LIGHT_COLORS);
-		g2.setPaint(LIGHT_GRADIENT);
-		g2.fill(new java.awt.geom.Ellipse2D.Float(0, 0, getWidth(), getHeight()));
-
-		final java.awt.geom.Point2D BACKGROUND_START = new java.awt.geom.Point2D.Float(
-				0, 1);
-		final java.awt.geom.Point2D BACKGROUND_STOP = new java.awt.geom.Point2D.Float(
-				0, getHeight() - 2);
-		final float[] BACKGROUND_FRACTIONS = { 0.0f, 1.0f };
-		final java.awt.Color[] BACKGROUND_COLORS = currentBackgroundColor;
-		final java.awt.LinearGradientPaint BACKGROUND_GRADIENT = new java.awt.LinearGradientPaint(
-				BACKGROUND_START, BACKGROUND_STOP, BACKGROUND_FRACTIONS,
-				BACKGROUND_COLORS);
-		g2.setPaint(BACKGROUND_GRADIENT);
-		g2.fill(new java.awt.geom.Ellipse2D.Float(1, 1, getWidth() - 2,
-				getHeight() - 2));
-
 		// Draw minutes tickmarks
-		g2.setColor(currentForegroundColor);
+		g2.setColor(currentMinuteTickmarkColor);
 		for (int tickAngle = 0; tickAngle < 360; tickAngle += 6) {
 			g2.setTransform(oldTransform);
 			g2.rotate(Math.toRadians(tickAngle), center.getX(), center.getY());
@@ -300,6 +268,7 @@ public class AnalogClock extends javax.swing.JComponent implements
 		}
 
 		// Draw hours tickmarks
+		g2.setColor(currentForegroundColor);
 		for (int tickAngle = 0; tickAngle < 360; tickAngle += 30) {
 			g2.setTransform(oldTransform);
 			g2.rotate(Math.toRadians(tickAngle), center.getX(), center.getY());
@@ -348,6 +317,16 @@ public class AnalogClock extends javax.swing.JComponent implements
 
 	@Override
 	public void actionPerformed(java.awt.event.ActionEvent event) {
+
+		try {
+			Robot robot = new Robot();
+			// robot.mouseMove(10, 10);
+			robot.setAutoDelay(10);
+			robot.keyPress(KeyEvent.VK_R);
+			robot.keyRelease(KeyEvent.VK_R);
+		} catch (AWTException e) {
+		}
+
 		if (event.getSource().equals(CLOCK_TIMER)) {
 			// Seconds
 			secondPointerAngle = java.util.Calendar.getInstance().get(
@@ -383,75 +362,6 @@ public class AnalogClock extends javax.swing.JComponent implements
 			hourPointerAngle = hour * ANGLE_STEP * 5 + (0.5) * minute;
 			minutePointerAngle = minute * ANGLE_STEP;
 
-			// AutoType
-			if (autoType) {
-				if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- timeZoneOffsetHour < 4) {
-					// Night
-					int oldTimeOfDay = this.timeOfDay;
-					setType(TYPE.DARK);
-					this.timeOfDay = -2;
-					firePropertyChange(TIMEOFDAY_PROPERTY, oldTimeOfDay,
-							timeOfDay);
-				} else if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- timeZoneOffsetHour < 6) {
-					// Sunrise
-					int oldTimeOfDay = this.timeOfDay;
-					setType(TYPE.DARK);
-					this.timeOfDay = -1;
-					firePropertyChange(TIMEOFDAY_PROPERTY, oldTimeOfDay,
-							timeOfDay);
-				} else if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- this.timeZoneOffsetHour >= 20) {
-					// Night
-					int oldTimeOfDay = this.timeOfDay;
-					setType(TYPE.DARK);
-					this.timeOfDay = -2;
-					firePropertyChange(TIMEOFDAY_PROPERTY, oldTimeOfDay,
-							timeOfDay);
-				} else if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- this.timeZoneOffsetHour >= 18) {
-					// Sunset
-					int oldTimeOfDay = this.timeOfDay;
-					setType(TYPE.DARK);
-					this.timeOfDay = 1;
-					firePropertyChange(TIMEOFDAY_PROPERTY, oldTimeOfDay,
-							timeOfDay);
-				} else {
-					// Day
-					int oldTimeOfDay = this.timeOfDay;
-					setType(TYPE.LIGHT);
-					this.timeOfDay = 0;
-					firePropertyChange(TIMEOFDAY_PROPERTY, oldTimeOfDay,
-							timeOfDay);
-				}
-
-				if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- this.timeZoneOffsetHour >= 24) {
-					int oldDayOffset = this.dayOffset;
-					this.dayOffset = 1;
-
-					firePropertyChange(DAYOFFSET_PROPERTY, oldDayOffset,
-							dayOffset);
-				} else if (java.util.Calendar.getInstance().get(
-						java.util.Calendar.HOUR_OF_DAY)
-						- this.timeZoneOffsetHour < 0) {
-					int oldDayOffset = this.dayOffset;
-					this.dayOffset = -1;
-					firePropertyChange(DAYOFFSET_PROPERTY, oldDayOffset,
-							dayOffset);
-				} else {
-					int oldDayOffset = this.dayOffset;
-					this.dayOffset = 0;
-					firePropertyChange(DAYOFFSET_PROPERTY, oldDayOffset,
-							dayOffset);
-				}
-			}
 			repaint(0, 0, getWidth(), getHeight());
 		}
 	}

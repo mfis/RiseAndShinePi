@@ -40,14 +40,14 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		p.setForeground(Color.DARK_GRAY);
 		p.setBackground(Color.BLACK);
 		
-		JLabel l1 = new JLabel("So, 19. Apr 2015");
+		JLabel l1 = new JLabel("Sam, 25. Apr 2015");
 		l1.setBounds(0, 0, 240, 80);
 		l1.setForeground(Color.LIGHT_GRAY);
-		Font font = new Font("Arial", Font.PLAIN, 16);
+		Font font = new Font("Arial", Font.BOLD, 16);
 		l1.setFont(font);
 		l1.setBounds(0, 0, 150, 20);
 		p.add(l1);
-		JLabel l2 = new JLabel("Wecker: Mo, 5:12 Uhr");
+		JLabel l2 = new JLabel("Wecker: Mon, 5:12 Uhr");
 //		l1.setFont(...);
 		l2.setBounds(0, 30, 150, 20);
 		l2.setForeground(Color.LIGHT_GRAY);
