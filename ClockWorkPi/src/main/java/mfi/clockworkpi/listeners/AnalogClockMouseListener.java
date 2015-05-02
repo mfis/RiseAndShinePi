@@ -1,24 +1,23 @@
 package mfi.clockworkpi.listeners;
 
+import mfi.clockworkpi.gui.cardpanes.BlankPane;
 import mfi.clockworkpi.logic.Processor;
 
-public class AnalogClockMouseListener extends AbstractLongClickMouseListener{
+public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
 
 	public AnalogClockMouseListener(Processor processor) {
-		super(processor);
+		super(processor, 2000);
 	}
 
 	@Override
 	public void shortClick() {
-		// TODO Auto-generated method stub
-		getProcessor();
-		
+		getProcessor().toggleBulb();
+
 	}
 
 	@Override
 	public void longClick() {
-		// TODO Auto-generated method stub
-		
+		getProcessor().switchGuiTo(BlankPane.class.getName());
 	}
 
 }

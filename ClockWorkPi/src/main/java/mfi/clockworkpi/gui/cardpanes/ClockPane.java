@@ -4,29 +4,26 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import mfi.clockworkpi.gui.components.AnalogClock;
-import mfi.clockworkpi.gui.components.MainFrame;
-import mfi.clockworkpi.listeners.SwitchButtonListener;
+import mfi.clockworkpi.gui.components.Gui;
+import mfi.clockworkpi.gui.components.TouchButton;
+import mfi.clockworkpi.listeners.AnalogClockMouseListener;
+import mfi.clockworkpi.logic.Processor;
 
-public class ClockPane extends JDesktopPane implements ActionListener {
+public class ClockPane extends JDesktopPane {
 
 	private static final long serialVersionUID = 1L;
-	private JButton clockButton;
-	private JButton switchButton;
+	private TouchButton clockButton;
+	private TouchButton switchButton;
 
-	public ClockPane(SwitchButtonListener switchButtonListener)
-			throws HeadlessException {
+	public ClockPane(Processor processor) throws HeadlessException {
 
-		
 		AnalogClock clock = new AnalogClock();
 		clock.setName("clock");
 		clock.setPreferredSize(new java.awt.Dimension(240, 240));
@@ -42,30 +39,28 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		clockPanel.setBackground(Color.BLACK);
 		clockPanel.add(clock);
 
-		clockButton = new JButton("");
+		clockButton = new TouchButton("");
 		clockButton.setBounds(0, 0, 240, 240);
-		clockButton.addActionListener(switchButtonListener);
+		clockButton.addMouseListener(new AnalogClockMouseListener(processor));
 		clockButton.setName(SettingsPane.class.getName());
-		clockButton.setBorderPainted(false);
 		clockButton.setBackground(Color.BLACK);
 		clockButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		clockButton.add(clockPanel);
-		
-		switchButton = new JButton("");
+
+		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
-		switchButton.addActionListener(switchButtonListener);
+		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
 		switchButton.setName(SettingsPane.class.getName());
-		switchButton.setBorderPainted(false);
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-		
+
 		JPanel p = new JPanel();
 		p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		p.setSize(240, 80);
 		p.setPreferredSize(new Dimension(240, 80));
 		p.setForeground(Color.DARK_GRAY);
 		p.setBackground(Color.BLACK);
-		
+
 		JLabel l1 = new JLabel("Sam, 25. Apr 2015");
 		l1.setBounds(0, 0, 240, 80);
 		l1.setForeground(Color.LIGHT_GRAY);
@@ -83,21 +78,12 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		this.setBackground(Color.BLACK);
 		this.add(clockButton);
 		this.add(switchButton);
-		
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		System.out.println("action ClockPane " + e);
-		if (e.getSource() == switchButton) {
-			// ...
-		}
 
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		return (MainFrame.applicationSize);
+		return (Gui.applicationSize);
 	}
 
 }

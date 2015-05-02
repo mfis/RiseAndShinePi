@@ -16,12 +16,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import mfi.clockworkpi.gui.cardpanes.BlankPane;
 import mfi.clockworkpi.gui.cardpanes.ClockPane;
 import mfi.clockworkpi.gui.cardpanes.SettingsPane;
 import mfi.clockworkpi.listeners.SwitchButtonListener;
 import mfi.clockworkpi.logic.Processor;
 
-public class MainFrame extends JFrame {
+public class Gui extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
@@ -30,20 +31,20 @@ public class MainFrame extends JFrame {
 	private GraphicsDevice device;
 	private ClockPane clockPane;
 	private SettingsPane settingsPane;
+	private BlankPane blankPane;
+	private JPanel contentPane;
 	private SwitchButtonListener switchButtonListener;
 	private DevelopmentPanel developmentPanel;
 	private Processor processor;
 
-	public MainFrame(Processor processor) {
+	public Gui(Processor processor) {
 		this.processor = processor;
-		paintGui();
 	}
 
-	private void paintGui() {
+	public void paintGui() {
 
 		try {
-			UIManager.setLookAndFeel(UIManager
-					.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -53,43 +54,39 @@ public class MainFrame extends JFrame {
 		frame.setLocationRelativeTo(null);
 		frame.setBackground(Color.BLACK);
 
-		GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		device = ge.getDefaultScreenDevice();
 
 		if (device.isFullScreenSupported() && !processor.isDevelopmentMode()) {
 			frame.setUndecorated(true);
 			device.setFullScreenWindow(frame);
-			int appPixels = new Double(applicationSize.getHeight()).intValue()
-					* new Double(applicationSize.getWidth()).intValue();
-			int displayPixels = device.getDisplayMode().getWidth()
-					* device.getDisplayMode().getHeight();
+			int appPixels = new Double(applicationSize.getHeight()).intValue() * new Double(applicationSize.getWidth()).intValue();
+			int displayPixels = device.getDisplayMode().getWidth() * device.getDisplayMode().getHeight();
 			if (appPixels == displayPixels) {
 				Toolkit toolkit = Toolkit.getDefaultToolkit();
 				Point hotSpot = new Point(0, 0);
-				BufferedImage cursorImage = new BufferedImage(1, 1,
-						BufferedImage.TRANSLUCENT);
-				Cursor invisibleCursor = toolkit.createCustomCursor(
-						cursorImage, hotSpot, "InvisibleCursor");
+				BufferedImage cursorImage = new BufferedImage(1, 1, BufferedImage.TRANSLUCENT);
+				Cursor invisibleCursor = toolkit.createCustomCursor(cursorImage, hotSpot, "InvisibleCursor");
 				frame.setCursor(invisibleCursor);
 			}
 		}
 
-		JPanel contentPane = new JPanel();
+		contentPane = new JPanel();
 		contentPane.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		contentPane.setLayout(new CardLayout());
 
-		switchButtonListener = new SwitchButtonListener(contentPane);
+		switchButtonListener = new SwitchButtonListener(processor);
 
-		clockPane = new ClockPane(switchButtonListener);
-		settingsPane = new SettingsPane(switchButtonListener);
+		clockPane = new ClockPane(processor);
+		settingsPane = new SettingsPane(processor);
+		blankPane = new BlankPane(processor);
 
 		contentPane.add(clockPane, clockPane.getClass().getName());
 		contentPane.add(settingsPane, settingsPane.getClass().getName());
+		contentPane.add(blankPane, blankPane.getClass().getName());
 
 		if (processor.isDevelopmentMode()) {
-			developmentPanel = new DevelopmentPanel(contentPane,
-					applicationSize);
+			developmentPanel = new DevelopmentPanel(contentPane, applicationSize);
 			frame.setSize(developmentPanel.getDevelopmentWindowSize());
 			frame.setPreferredSize(developmentPanel.getDevelopmentWindowSize());
 			frame.getContentPane().add(developmentPanel, BorderLayout.CENTER);
@@ -103,8 +100,24 @@ public class MainFrame extends JFrame {
 		frame.setVisible(true);
 	}
 
+	public void switchGuiTo(String name) {
+		((CardLayout) contentPane.getLayout()).show(contentPane, name);
+	}
+
 	public DevelopmentPanel getDevelopmentPanel() {
 		return developmentPanel;
+	}
+
+	public SwitchButtonListener getSwitchButtonListener() {
+		return switchButtonListener;
+	}
+
+	public JPanel getContentPane() {
+		return contentPane;
+	}
+
+	public CardLayout getCardLayout() {
+		return (CardLayout) contentPane.getLayout();
 	}
 
 }

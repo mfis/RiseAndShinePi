@@ -1,28 +1,23 @@
 package mfi.clockworkpi.listeners;
 
-import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
+
+import mfi.clockworkpi.logic.Processor;
 
 public class SwitchButtonListener implements ActionListener {
 
-	private JPanel contentPane;
+	private Processor processor;
 
-	public SwitchButtonListener(JPanel panel) {
-		contentPane = panel;
+	public SwitchButtonListener(Processor processor) {
+		this.processor = processor;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		CardLayout cardLayout = (CardLayout) contentPane.getLayout();
-		cardLayout.show(contentPane, ((JButton) e.getSource()).getName());
-
-		// exit:
-		// device.setFullScreenWindow(null);
-		// System.exit(0);
+		processor.switchGuiTo(((JButton) e.getSource()).getName());
 	}
 
 }

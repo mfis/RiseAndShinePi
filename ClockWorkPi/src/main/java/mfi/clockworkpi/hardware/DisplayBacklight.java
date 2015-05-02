@@ -22,20 +22,15 @@ public class DisplayBacklight {
 
 	private void dimToPercentInSimulation(int percent) {
 		if (percent == 0) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane()
-					.setBackground(Color.BLACK);
+			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.BLACK);
 		} else if (percent < 30) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane()
-					.setBackground(Color.DARK_GRAY);
+			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.DARK_GRAY);
 		} else if (percent < 50) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane()
-					.setBackground(Color.GRAY);
+			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.GRAY);
 		} else if (percent < 100) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane()
-					.setBackground(Color.LIGHT_GRAY);
+			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.LIGHT_GRAY);
 		} else {
-			processor.getGui().getDevelopmentPanel().getBacklightPane()
-					.setBackground(Color.WHITE);
+			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.WHITE);
 		}
 	}
 

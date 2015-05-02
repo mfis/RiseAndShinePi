@@ -5,17 +5,22 @@ import mfi.clockworkpi.logic.Processor;
 public class Bulb {
 
 	private Processor processor;
+	private boolean state = false;
 
 	public Bulb(Processor processor) {
 		this.processor = processor;
+		if (!processor.isDevelopmentMode()) {
+			switchTo(false);
+		}
 	}
 
-	public void switchTo(boolean state) {
+	public void switchTo(boolean newState) {
 		if (processor.isDevelopmentMode()) {
-			switchToInSimulation(state);
+			switchToInSimulation(newState);
 		} else {
-			switchToInHardware(state);
+			switchToInHardware(newState);
 		}
+		state = newState;
 	}
 
 	private void switchToInSimulation(boolean state) {
@@ -30,6 +35,10 @@ public class Bulb {
 
 	private void switchToInHardware(boolean state) {
 		// TODO
+	}
+
+	public boolean isState() {
+		return state;
 	}
 
 }

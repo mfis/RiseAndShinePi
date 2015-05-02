@@ -9,52 +9,71 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JDesktopPane;
 
-import mfi.clockworkpi.gui.components.MainFrame;
-import mfi.clockworkpi.listeners.SwitchButtonListener;
+import mfi.clockworkpi.gui.components.Gui;
+import mfi.clockworkpi.gui.components.TouchButton;
+import mfi.clockworkpi.logic.Processor;
 
 public class SettingsPane extends JDesktopPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	private JButton switchButton;
-	private JButton exitButton;
 
-	public SettingsPane(SwitchButtonListener switchButtonListener)
-			throws HeadlessException {
+	private Processor processor;
+	private TouchButton switchButton;
+	private TouchButton[] alarmButton;
 
-		switchButton = new JButton("switch to clock");
-		switchButton.setBounds(20, 120, 150, 30);
-		switchButton.addActionListener(switchButtonListener);
+	public SettingsPane(Processor processor) throws HeadlessException {
+
+		this.processor = processor;
+
+		alarmButton = new TouchButton[processor.getAlarms().size()];
+		for (int i = 0; i < processor.getAlarms().size(); i++) {
+			alarmButton[i] = new TouchButton(processor.getAlarms().get(0).toString());
+			alarmButton[i].setBounds((i * 121), 0, 119, 40);
+			alarmButton[i].setName(String.valueOf(i));
+			alarmButton[i].addActionListener(this);
+			this.add(alarmButton[i]);
+		}
+		refreshAlarmButtons();
+
+		switchButton = new TouchButton("Uhr anzeigen");
+		switchButton.setBounds(0, 280, 240, 40);
+		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
 		switchButton.setName(ClockPane.class.getName());
-
-		exitButton = new JButton("exit");
-		exitButton.setBounds(20, 170, 150, 30);
-		exitButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// FIXME
-				System.exit(0);
-			}
-		});
-		exitButton.setName(ClockPane.class.getName());
+		this.add(switchButton);
 
 		this.setBackground(Color.BLACK);
-		this.add(switchButton);
-		this.add(exitButton);
 
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		System.out.println("action SettingsPane " + e);
-		if (e.getSource() == switchButton) {
-			// ...
-		}
 
+		int index = Integer.parseInt(((JButton) e.getSource()).getName());
+		Integer newAlarmIndex;
+		if (processor.getActiveAlarm() != null && index == processor.getActiveAlarm()) {
+			newAlarmIndex = null;
+		} else {
+			newAlarmIndex = index;
+		}
+		processor.setActiveAlarm(newAlarmIndex);
+		refreshAlarmButtons();
+	}
+
+	private void refreshAlarmButtons() {
+
+		for (int i = 0; i < processor.getAlarms().size(); i++) {
+			if (processor.getActiveAlarm() != null && processor.getActiveAlarm() == i) {
+				alarmButton[i].setForeground(Color.WHITE);
+			} else {
+				alarmButton[i].setForeground(Color.DARK_GRAY);
+			}
+			alarmButton[i].setText(processor.getAlarms().get(i).toString());
+		}
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
-		return (MainFrame.applicationSize);
+		return (Gui.applicationSize);
 	}
 
 }

@@ -9,18 +9,18 @@ import mfi.clockworkpi.logic.Processor;
 public abstract class AbstractLongClickMouseListener extends MouseAdapter {
 
 	private java.util.Timer t;
-
 	private boolean eventFired;
-	
 	private Processor processor;
+	private int timespan;
 
-	public  AbstractLongClickMouseListener(Processor processor) {
+	public AbstractLongClickMouseListener(Processor processor, int timespanInMillies) {
 		this.processor = processor;
+		timespan = timespanInMillies;
 	}
-	
+
 	@Override
 	public final void mousePressed(MouseEvent e) {
-		
+
 		eventFired = false;
 		if (t == null) {
 			t = new java.util.Timer();
@@ -31,7 +31,7 @@ public abstract class AbstractLongClickMouseListener extends MouseAdapter {
 				eventFired = true;
 				longClick();
 			}
-		}, 2000);
+		}, timespan);
 	}
 
 	@Override
