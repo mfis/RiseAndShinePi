@@ -37,6 +37,8 @@ public class Gui extends JFrame {
 	private DevelopmentPanel developmentPanel;
 	private Processor processor;
 
+	private boolean fullscreen;
+
 	public Gui(Processor processor) {
 		this.processor = processor;
 	}
@@ -112,12 +114,17 @@ public class Gui extends JFrame {
 		return switchButtonListener;
 	}
 
+	@Override
 	public JPanel getContentPane() {
 		return contentPane;
 	}
 
 	public CardLayout getCardLayout() {
 		return (CardLayout) contentPane.getLayout();
+	}
+
+	public boolean isFullscreen() {
+		return fullscreen;
 	}
 
 }

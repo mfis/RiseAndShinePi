@@ -43,6 +43,7 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	// Flags
 	private boolean secondPointerVisible = true;
 	private boolean autoType = true;
+	private boolean preventScreensaver = false;
 
 	public AnalogClock() {
 		super();
@@ -275,13 +276,14 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	@Override
 	public void actionPerformed(java.awt.event.ActionEvent event) {
 
-		try {
-			Robot robot = new Robot();
-			// robot.mouseMove(10, 10);
-			robot.setAutoDelay(10);
-			robot.keyPress(KeyEvent.VK_R);
-			robot.keyRelease(KeyEvent.VK_R);
-		} catch (AWTException e) {
+		if (preventScreensaver) {
+			try {
+				Robot robot = new Robot();
+				robot.setAutoDelay(10);
+				robot.keyPress(KeyEvent.VK_R);
+				robot.keyRelease(KeyEvent.VK_R);
+			} catch (AWTException e) {
+			}
 		}
 
 		if (event.getSource().equals(CLOCK_TIMER)) {
@@ -320,5 +322,13 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	@Override
 	public String toString() {
 		return "Analog Clock";
+	}
+
+	public boolean isPreventScreensaver() {
+		return preventScreensaver;
+	}
+
+	public void setPreventScreensaver(boolean preventScreensaver) {
+		this.preventScreensaver = preventScreensaver;
 	}
 }

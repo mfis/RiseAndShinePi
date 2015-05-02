@@ -4,25 +4,37 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.HeadlessException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 import mfi.clockworkpi.gui.components.AnalogClock;
 import mfi.clockworkpi.gui.components.Gui;
 import mfi.clockworkpi.gui.components.TouchButton;
 import mfi.clockworkpi.listeners.AnalogClockMouseListener;
 import mfi.clockworkpi.logic.Processor;
+import mfi.clockworkpi.logic.Utils;
 
-public class ClockPane extends JDesktopPane {
+public class ClockPane extends JDesktopPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private TouchButton clockButton;
 	private TouchButton switchButton;
+	private final Timer timer = new Timer(1000, this);
+	private JLabel labelActualDate;
+	private JLabel labelNextAlarm;
+	private Processor processor;
 
 	public ClockPane(Processor processor) throws HeadlessException {
+
+		this.processor = processor;
 
 		AnalogClock clock = new AnalogClock();
 		clock.setName("clock");
@@ -31,6 +43,7 @@ public class ClockPane extends JDesktopPane {
 		clock.setType(AnalogClock.TYPE.DARK);
 		clock.setSecondPointerVisible(false);
 		clock.setAutoType(false);
+		clock.setPreventScreensaver(processor.getGui().isFullscreen());
 
 		JPanel clockPanel = new JPanel();
 		clockPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -54,36 +67,64 @@ public class ClockPane extends JDesktopPane {
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
-		JPanel p = new JPanel();
+		JDesktopPane p = new JDesktopPane();
 		p.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		p.setSize(240, 80);
 		p.setPreferredSize(new Dimension(240, 80));
 		p.setForeground(Color.DARK_GRAY);
 		p.setBackground(Color.BLACK);
 
-		JLabel l1 = new JLabel("Sam, 25. Apr 2015");
-		l1.setBounds(0, 0, 240, 80);
-		l1.setForeground(Color.LIGHT_GRAY);
+		labelActualDate = new JLabel("", SwingConstants.CENTER);
+		labelActualDate.setForeground(Color.LIGHT_GRAY);
 		Font font = new Font("Arial", Font.BOLD, 16);
-		l1.setFont(font);
-		l1.setBounds(0, 0, 150, 20);
-		p.add(l1);
-		JLabel l2 = new JLabel("Wecker: Mon, 5:12 Uhr");
-		l2.setBounds(0, 30, 150, 20);
-		l2.setForeground(Color.LIGHT_GRAY);
-		l2.setFont(font);
-		p.add(l2);
+		labelActualDate.setFont(font);
+		labelActualDate.setBounds(0, 10, 240, 30);
+		p.add(labelActualDate);
+
+		labelNextAlarm = new JLabel("", SwingConstants.CENTER);
+		labelNextAlarm.setBounds(0, 40, 240, 30);
+		labelNextAlarm.setForeground(Color.LIGHT_GRAY);
+		labelNextAlarm.setFont(font);
+		p.add(labelNextAlarm);
 		switchButton.add(p);
+
+		refreshLabels();
 
 		this.setBackground(Color.BLACK);
 		this.add(clockButton);
 		this.add(switchButton);
+
+		timer.start();
+	}
+
+	private void refreshLabels() {
+
+		String actualDate = Utils.getSimpleDateFormat("EE, d. MMM yyyy HHmmss").format(new Date());
+		labelActualDate.setText(actualDate);
+
+		String alarm;
+		if (processor.getActiveAlarm() == null) {
+			alarm = "Wecker ist aus";
+		} else {
+			alarm = "Wecker: " + processor.nextAlarmTimeString();
+		}
+		labelNextAlarm.setText(alarm);
+
+	}
+
+	public void refresh() {
 
 	}
 
 	@Override
 	public Dimension getPreferredSize() {
 		return (Gui.applicationSize);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		refreshLabels();
+
 	}
 
 }

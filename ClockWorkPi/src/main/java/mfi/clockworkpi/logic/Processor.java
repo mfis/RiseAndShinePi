@@ -1,5 +1,6 @@
 package mfi.clockworkpi.logic;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,8 +27,9 @@ public class Processor {
 		displayBacklight = new DisplayBacklight(this);
 		bulb = new Bulb(this);
 		alarms = new LinkedList<Alarm>();
-		alarms.add(new Alarm(5, 12, true));
-		alarms.add(new Alarm(9, 0, false));
+		alarms.add(new Alarm(5, 12, true, false));
+		alarms.add(new Alarm(9, 0, false, false));
+		alarms.add(new Alarm(11, 30, false, true));
 	}
 
 	public void initialize() {
@@ -52,6 +54,20 @@ public class Processor {
 		}
 
 		gui.switchGuiTo(name);
+	}
+
+	private Calendar nextAlarmTime() {
+		if (activeAlarm == null) {
+			return null;
+		}
+		return alarms.get(activeAlarm).nextAlarmTime();
+	}
+
+	public String nextAlarmTimeString() {
+		if (activeAlarm == null) {
+			return null;
+		}
+		return alarms.get(activeAlarm).nextAlarmTimeString();
 	}
 
 	public void turnOffBulb() {
