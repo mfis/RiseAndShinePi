@@ -103,6 +103,11 @@ public class Gui extends JFrame {
 	}
 
 	public void switchGuiTo(String name) {
+		if (name.equals(clockPane.getClass().getName())) {
+			clockPane.refreshLabels();
+		} else if (name.equals(settingsPane.getClass().getName())) {
+			settingsPane.refreshButtons();
+		}
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
 	}
 

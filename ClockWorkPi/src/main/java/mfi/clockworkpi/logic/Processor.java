@@ -1,28 +1,41 @@
 package mfi.clockworkpi.logic;
 
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Timer;
 
 import mfi.clockworkpi.gui.cardpanes.BlankPane;
 import mfi.clockworkpi.gui.cardpanes.ClockPane;
 import mfi.clockworkpi.gui.components.Gui;
+import mfi.clockworkpi.hardware.AudioPlayer;
 import mfi.clockworkpi.hardware.Bulb;
 import mfi.clockworkpi.hardware.DisplayBacklight;
 
-public class Processor {
+public class Processor implements Constants {
 
 	private boolean developmentMode = true;
 	private Gui gui;
 	private DisplayBacklight displayBacklight;
 	private Bulb bulb;
+	private AudioPlayer audioPlayer;
+
+	private Calendar actualCalendar;
+	private Timer alarmTimer;
 
 	private List<Alarm> alarms;
 	private Integer activeAlarm = null;
+	private Calendar nextAlarm = null;
+	private String nextAlarmString = null;
+	private boolean alarmNowOn = false;
+	private boolean alarmStateDirty;
 
 	private int backlightLevel = 100;
 
 	public Processor(boolean developmentMode) {
+		actualCalendar = new GregorianCalendar();
+		alarmStateDirty = true;
 		this.developmentMode = developmentMode;
 		displayBacklight = new DisplayBacklight(this);
 		bulb = new Bulb(this);
@@ -30,21 +43,30 @@ public class Processor {
 		alarms.add(new Alarm(5, 12, true, false));
 		alarms.add(new Alarm(9, 0, false, false));
 		alarms.add(new Alarm(11, 30, false, true));
+		alarmTimer = new Timer();
 	}
 
 	public void initialize() {
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
+		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003);
 	}
 
 	private void initializeHardware() {
 		switchGuiTo(ClockPane.class.getName());
 		displayBacklight.dimToPercent(backlightLevel);
+		audioPlayer = new AudioPlayer();
 		turnOffBulb();
 	}
 
 	public void switchGuiTo(String name) {
+
+		if (alarmNowOn) {
+			alarmOff();
+		}
+
+		alarmStateDirty = true;
 
 		if (name.equals(BlankPane.class.getName())) {
 			displayBacklight.dimToPercent(0);
@@ -56,18 +78,76 @@ public class Processor {
 		gui.switchGuiTo(name);
 	}
 
-	private Calendar nextAlarmTime() {
+	public synchronized void calculateNextAlarm() {
+
 		if (activeAlarm == null) {
-			return null;
+			nextAlarm = null;
+			nextAlarmString = null;
+			alarmStateDirty = false;
+			return;
 		}
-		return alarms.get(activeAlarm).nextAlarmTime();
+
+		Alarm a = alarms.get(activeAlarm);
+		nextAlarm = a.nextAlarmTime();
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm, actualCalendar);
+		alarmStateDirty = false;
 	}
 
 	public String nextAlarmTimeString() {
-		if (activeAlarm == null) {
-			return null;
+
+		if (alarmStateDirty) {
+			calculateNextAlarm();
 		}
-		return alarms.get(activeAlarm).nextAlarmTimeString();
+		return nextAlarmString;
+	}
+
+	public void processAlarmTimer() {
+
+		if (alarmStateDirty) {
+			calculateNextAlarm();
+		}
+
+		if (nextAlarm == null) {
+			if (alarmNowOn) {
+				alarmOff();
+			}
+			return;
+		}
+
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+
+		// If alarm is on more than an hour, turn off
+		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
+			alarmOff();
+			return;
+		}
+
+		if (alarmNowOn) {
+			return;
+		}
+
+		if (nextAlarm.before(actualCalendar)) {
+			alarmOn();
+			return;
+		}
+	}
+
+	private void alarmOn() {
+		nextAlarmString = "jetzt";
+		alarmNowOn = true;
+		turnOnBulb();
+		audioPlayer.start();
+	}
+
+	public void alarmOff() {
+		alarmNowOn = false;
+		turnOffBulb();
+		audioPlayer.stop();
+		if (alarms.get(activeAlarm).isOnce()) {
+			activeAlarm = null;
+		}
+		calculateNextAlarm();
 	}
 
 	public void turnOffBulb() {
@@ -85,6 +165,10 @@ public class Processor {
 	public void exit() {
 		// FIXME: device.setFullScreenWindow(null);
 		System.exit(0);
+	}
+
+	public void setAlarmStateToDirty() {
+		alarmStateDirty = true;
 	}
 
 	public boolean isDevelopmentMode() {
@@ -113,6 +197,10 @@ public class Processor {
 
 	public void setActiveAlarm(Integer activeAlarm) {
 		this.activeAlarm = activeAlarm;
+	}
+
+	public boolean isAlarmNowOn() {
+		return alarmNowOn;
 	}
 
 }

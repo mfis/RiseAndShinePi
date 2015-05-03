@@ -11,7 +11,11 @@ public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
 
 	@Override
 	public void shortClick() {
-		getProcessor().toggleBulb();
+		if (getProcessor().isAlarmNowOn()) {
+			getProcessor().alarmOff();
+		} else {
+			getProcessor().toggleBulb();
+		}
 
 	}
 

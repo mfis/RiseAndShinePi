@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -31,6 +32,7 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 	private JLabel labelActualDate;
 	private JLabel labelNextAlarm;
 	private Processor processor;
+	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EE, d. MMM yyyy");
 
 	public ClockPane(Processor processor) throws HeadlessException {
 
@@ -97,22 +99,17 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		timer.start();
 	}
 
-	private void refreshLabels() {
+	public void refreshLabels() {
 
-		String actualDate = Utils.getSimpleDateFormat("EE, d. MMM yyyy HHmmss").format(new Date());
-		labelActualDate.setText(actualDate);
+		labelActualDate.setText(sdf.format(new Date()));
 
 		String alarm;
-		if (processor.getActiveAlarm() == null) {
+		if (processor.nextAlarmTimeString() == null) {
 			alarm = "Wecker ist aus";
 		} else {
 			alarm = "Wecker: " + processor.nextAlarmTimeString();
 		}
 		labelNextAlarm.setText(alarm);
-
-	}
-
-	public void refresh() {
 
 	}
 

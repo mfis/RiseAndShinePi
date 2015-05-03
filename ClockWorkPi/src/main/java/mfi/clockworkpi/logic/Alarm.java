@@ -1,5 +1,6 @@
 package mfi.clockworkpi.logic;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
@@ -10,12 +11,16 @@ public class Alarm {
 		this.alarmMinute = minute;
 		this.onWeekdaysOnly = onWeekdaysOnly;
 		this.once = once;
+		alarmCalendar = new GregorianCalendar();
 	}
 
 	private int alarmHour;
 	private int alarmMinute;
 	private boolean onWeekdaysOnly;
 	private boolean once;
+	private Calendar alarmCalendar;
+	private static SimpleDateFormat sdfHHmm = Utils.getSimpleDateFormat("HH:mm");;
+	private static SimpleDateFormat sdfEEHHmm = Utils.getSimpleDateFormat("EE, HH:mm");
 
 	@Override
 	public String toString() {
@@ -37,38 +42,42 @@ public class Alarm {
 
 	public Calendar nextAlarmTime() {
 
-		Calendar cal = new GregorianCalendar();
-		int actHour = cal.get(Calendar.HOUR_OF_DAY);
-		int actMinute = cal.get(Calendar.MINUTE);
-		int alarmMinOfDay = (alarmHour * 60) + alarmMinute;
-		int actMinOfDay = (actHour * 60) + actMinute;
+		alarmCalendar.setTimeInMillis(System.currentTimeMillis());
+		long actHour = alarmCalendar.get(Calendar.HOUR_OF_DAY);
+		long actMinute = alarmCalendar.get(Calendar.MINUTE);
+		long actSecond = alarmCalendar.get(Calendar.SECOND);
+		long alarmSecOfDay = ((alarmHour * 60) + alarmMinute) * 60;
+		long actSecOfDay = (((actHour * 60) + actMinute) * 60) + actSecond;
 
-		if (actMinOfDay > alarmMinOfDay) {
-			moveToNextDayAtAlarmTime(cal);
+		if (actSecOfDay > alarmSecOfDay) {
+			moveToNextDayAtAlarmTime(alarmCalendar);
 		} else {
-			moveToAlarmTime(cal);
+			moveToAlarmTime(alarmCalendar);
 		}
 
 		if (!once && onWeekdaysOnly) {
-			while (cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-				moveToNextDayAtAlarmTime(cal);
+			while (alarmCalendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || alarmCalendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+				moveToNextDayAtAlarmTime(alarmCalendar);
 			}
 		}
 
-		return cal;
+		return alarmCalendar;
 	}
 
-	public String nextAlarmTimeString() {
+	public static String nextAlarmTimeStringFor(Calendar alarmCalendar, Calendar actCalendar) {
 
-		Calendar actCalendar = new GregorianCalendar();
-		Calendar alarmCalendar = nextAlarmTime();
 		if (actCalendar.get(Calendar.YEAR) == alarmCalendar.get(Calendar.YEAR) && actCalendar.get(Calendar.DAY_OF_YEAR) == alarmCalendar.get(Calendar.DAY_OF_YEAR)) {
 			// today - no weekday
-			return Utils.getSimpleDateFormat("HH:mm").format(nextAlarmTime()) + " Uhr";
+			return sdfHHmm.format(alarmCalendar.getTime()) + " Uhr";
 		} else {
-			return Utils.getSimpleDateFormat("EE, HH:mm").format(nextAlarmTime()) + " Uhr";
+			return sdfEEHHmm.format(alarmCalendar.getTime()) + " Uhr";
 		}
 
+	}
+
+	private void moveToNextDayAtAlarmTime(Calendar cal) {
+		cal.add(Calendar.DAY_OF_MONTH, 1);
+		moveToAlarmTime(cal);
 	}
 
 	private void moveToAlarmTime(Calendar cal) {
@@ -76,11 +85,6 @@ public class Alarm {
 		cal.set(Calendar.MINUTE, alarmMinute);
 		cal.set(Calendar.SECOND, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-	}
-
-	private void moveToNextDayAtAlarmTime(Calendar cal) {
-		cal.add(Calendar.DAY_OF_MONTH, 1);
-		moveToAlarmTime(cal);
 	}
 
 	public int getHour() {

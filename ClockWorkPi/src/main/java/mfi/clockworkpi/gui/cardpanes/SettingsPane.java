@@ -123,7 +123,7 @@ public class SettingsPane extends JDesktopPane implements ActionListener {
 		refreshButtons();
 	}
 
-	private void refreshButtons() {
+	public void refreshButtons() {
 
 		for (int i = 0; i < processor.getAlarms().size(); i++) {
 			if (processor.getActiveAlarm() != null && processor.getActiveAlarm() == i) {
