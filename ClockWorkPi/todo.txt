@@ -1,4 +1,0 @@
-- more than one active alarm
-- snooze function (e.g. with third alarm time which is reserved for snooze)
-- refreh panes over interface method
-- clean exiting (stop timers etc)
