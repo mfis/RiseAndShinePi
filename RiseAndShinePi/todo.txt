@@ -2,3 +2,5 @@
 - snooze function (e.g. with third alarm time which is reserved for snooze)
 - refreh panes over interface method
 - clean exiting (stop timers etc)
+- exceptionhandling (audio player etc)
+- bug with second alarm time in runtime
