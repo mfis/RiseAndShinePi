@@ -169,6 +169,14 @@ public class Processor implements Constants {
 	}
 
 	public void exit() {
+
+		alarmTimer.cancel();
+		alarmTimer.purge();
+
+		audioPlayer.stop();
+		turnOffBulb();
+		displayBacklight.dimToPercent(90);
+
 		// FIXME: device.setFullScreenWindow(null);
 		System.exit(0);
 	}
