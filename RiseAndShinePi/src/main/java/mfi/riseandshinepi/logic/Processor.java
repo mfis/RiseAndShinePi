@@ -31,9 +31,11 @@ public class Processor implements Constants {
 	private boolean alarmNowOn = false;
 	private boolean alarmStateDirty;
 
-	private int backlightLevel = 100;
+	private int backlightLevel = 90; // FIXME: user properties
 
 	public Processor(boolean developmentMode) {
+		super();
+		ApplicationProperties.init();
 		actualCalendar = new GregorianCalendar();
 		alarmStateDirty = true;
 		this.developmentMode = developmentMode;
@@ -56,7 +58,8 @@ public class Processor implements Constants {
 	private void initializeHardware() {
 		switchGuiTo(ClockPane.class.getName());
 		displayBacklight.dimToPercent(backlightLevel);
-		audioPlayer = new AudioPlayer();
+		bulb.switchTo(false);
+		audioPlayer = new AudioPlayer(this);
 		turnOffBulb();
 	}
 
@@ -90,7 +93,8 @@ public class Processor implements Constants {
 		Alarm a = alarms.get(activeAlarm);
 		nextAlarm = a.nextAlarmTime();
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
-		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm, actualCalendar);
+		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm,
+				actualCalendar);
 		alarmStateDirty = false;
 	}
 
@@ -118,7 +122,9 @@ public class Processor implements Constants {
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
 
 		// If alarm is on more than an hour, turn off
-		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
+		if (alarmNowOn
+				&& (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar
+						.getTimeInMillis()) {
 			alarmOff();
 			return;
 		}
