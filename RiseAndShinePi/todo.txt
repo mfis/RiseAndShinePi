@@ -4,3 +4,5 @@
 - clean exiting (stop timers etc)
 - exceptionhandling (audio player etc)
 - settings pane for volume and backlight
+- switching blank pane colors to protect display from burning in
+- switch to blank pane after turning off alarm or at fix times if alarm is off for a day
