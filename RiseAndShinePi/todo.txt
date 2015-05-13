@@ -4,3 +4,5 @@
 - clean exiting (stop timers etc)
 - exceptionhandling (audio player etc)
 - bug with second alarm time in runtime
+- settings pane for volume and backlight
+- configuration properties
