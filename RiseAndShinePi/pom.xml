@@ -24,6 +24,10 @@
 			<artifactId>tritonus-share</artifactId>
 			<version>0.3.7-2</version>
 		</dependency>
+		<!-- Raspberry Pi GPIO -->
+		<!-- "curl -s get.pi4j.com | sudo bash" - see http://pi4j.com/install.html -->
+		<!-- <dependency> <groupId>com.pi4j</groupId> <artifactId>pi4j-core</artifactId> 
+			<version>1.0</version> </dependency> -->
 	</dependencies>
 
 	<version>0.0.1-SNAPSHOT</version>
