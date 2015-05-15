@@ -45,7 +45,6 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		clock.setType(AnalogClock.TYPE.DARK);
 		clock.setSecondPointerVisible(false);
 		clock.setAutoType(false);
-		clock.setPreventScreensaver(processor.getGui().isFullscreen());
 
 		JPanel clockPanel = new JPanel();
 		clockPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -64,7 +63,8 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 
 		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
-		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
+		switchButton.addActionListener(processor.getGui()
+				.getSwitchButtonListener());
 		switchButton.setName(SettingsPane.class.getName());
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));

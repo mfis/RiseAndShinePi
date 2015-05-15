@@ -65,10 +65,6 @@ public class Processor implements Constants {
 
 	public void switchGuiTo(String name) {
 
-		if (alarmNowOn) {
-			alarmOff();
-		}
-
 		alarmStateDirty = true;
 
 		if (name.equals(BlankPane.class.getName())) {
@@ -140,6 +136,9 @@ public class Processor implements Constants {
 	}
 
 	private void alarmOn() {
+
+		switchGuiTo(ClockPane.class.getName());
+
 		nextAlarmString = "jetzt";
 		alarmNowOn = true;
 		turnOnBulb();
@@ -170,6 +169,10 @@ public class Processor implements Constants {
 
 	public void exit() {
 
+		if (alarmNowOn) {
+			alarmOff();
+		}
+
 		alarmTimer.cancel();
 		alarmTimer.purge();
 
@@ -177,7 +180,13 @@ public class Processor implements Constants {
 		turnOffBulb();
 		displayBacklight.dimToPercent(90);
 
-		// FIXME: device.setFullScreenWindow(null);
+		if (!isDevelopmentMode()) {
+			try {
+				gui.getDevice().setFullScreenWindow(null);
+			} catch (Exception e) {
+			}
+		}
+
 		System.exit(0);
 	}
 
@@ -215,6 +224,10 @@ public class Processor implements Constants {
 
 	public boolean isAlarmNowOn() {
 		return alarmNowOn;
+	}
+
+	public DisplayBacklight getDisplayBacklight() {
+		return displayBacklight;
 	}
 
 }

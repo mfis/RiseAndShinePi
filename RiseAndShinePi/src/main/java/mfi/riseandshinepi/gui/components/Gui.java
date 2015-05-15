@@ -139,4 +139,8 @@ public class Gui extends JFrame {
 		return fullscreen;
 	}
 
+	public GraphicsDevice getDevice() {
+		return device;
+	}
+
 }

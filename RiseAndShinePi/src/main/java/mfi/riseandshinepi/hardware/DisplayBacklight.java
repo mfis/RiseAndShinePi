@@ -11,6 +11,8 @@ public class DisplayBacklight {
 
 	private GPIOController backlightModulator;
 
+	private int actualPercent;
+
 	public DisplayBacklight(Processor processor) {
 		this.processor = processor;
 		if (!this.processor.isDevelopmentMode()) {
@@ -21,6 +23,7 @@ public class DisplayBacklight {
 	}
 
 	public void dimToPercent(int percent) {
+		actualPercent = percent;
 		if (processor.isDevelopmentMode()) {
 			dimToPercentInSimulation(percent);
 		} else {
@@ -49,6 +52,10 @@ public class DisplayBacklight {
 
 	private void dimToPercentInHardware(int percent) {
 		backlightModulator.setPWM(percent * 10, 0); // hardware max = 1023
+	}
+
+	public int getActualPercent() {
+		return actualPercent;
 	}
 
 }
