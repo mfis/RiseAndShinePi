@@ -14,6 +14,8 @@ public enum ApplicationProperties {
 	DISPLAY_BACKLIGHT_DIMMING_GPIO_PIN_NUMBER, //
 	MUSIC_DIR_1_RELATIVE_TO_USER_HOME, //
 	MUSIC_DIR_2_RELATIVE_TO_USER_HOME, //
+	DISPLAY_ON_X_HOURS_BEFORE_ALARM, //
+	DISPLAY_OFF_X_MINUTES_IN_INACTIVITY, //
 	; //
 
 	private String value = null;
@@ -24,8 +26,7 @@ public enum ApplicationProperties {
 
 		try {
 
-			URL url = ApplicationProperties.class.getClassLoader().getResource(
-					"application.properties");
+			URL url = ApplicationProperties.class.getClassLoader().getResource("application.properties");
 			URLConnection resConn = url.openConnection();
 			resConn.setUseCaches(false);
 			InputStream in = resConn.getInputStream();
@@ -33,8 +34,7 @@ public enum ApplicationProperties {
 			properties.load(in);
 
 		} catch (Exception e) {
-			throw new IllegalStateException(
-					"application.properties could not be loaded ", e);
+			throw new IllegalStateException("application.properties could not be loaded ", e);
 		}
 
 		for (ApplicationProperties e : values()) {
@@ -49,8 +49,7 @@ public enum ApplicationProperties {
 	public String toString() {
 
 		if (value == null) {
-			throw new IllegalStateException(
-					"ApplicationProperties - no value for: " + this.name());
+			throw new IllegalStateException("ApplicationProperties - no value for: " + this.name());
 		}
 		return value.trim();
 	}

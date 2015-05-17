@@ -3,4 +3,4 @@
 - refreh panes over interface method
 - exceptionhandling (audio player etc)
 - settings pane for volume and backlight
-- automatic switch to blank pane when daytime
+- remove long click listeners

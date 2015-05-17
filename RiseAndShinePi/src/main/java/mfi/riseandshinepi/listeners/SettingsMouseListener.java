@@ -1,11 +1,12 @@
 package mfi.riseandshinepi.listeners;
 
-import mfi.riseandshinepi.gui.cardpanes.BlankPane;
+import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
+import mfi.riseandshinepi.gui.cardpanes.DisplayAutoOffSettingsPane;
 import mfi.riseandshinepi.logic.Processor;
 
-public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
+public class SettingsMouseListener extends AbstractLongClickMouseListener {
 
-	public AnalogClockMouseListener(Processor processor) {
+	public SettingsMouseListener(Processor processor) {
 		super(processor, 2000);
 	}
 
@@ -13,18 +14,14 @@ public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
 	public void shortClick() {
 		getProcessor().setAlarmStateToDirty();
 		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
-		if (getProcessor().isAlarmNowOn()) {
-			getProcessor().alarmOff();
-		} else {
-			getProcessor().toggleBulb();
-		}
+		getProcessor().switchGuiTo(AlarmSettingsPane.class.getName());
 	}
 
 	@Override
 	public void longClick() {
 		getProcessor().setAlarmStateToDirty();
 		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
-		getProcessor().switchGuiTo(BlankPane.class.getName());
+		getProcessor().switchGuiTo(DisplayAutoOffSettingsPane.class.getName());
 	}
 
 }

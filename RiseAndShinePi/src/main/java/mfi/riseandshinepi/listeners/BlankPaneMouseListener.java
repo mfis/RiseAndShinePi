@@ -11,12 +11,16 @@ public class BlankPaneMouseListener extends AbstractLongClickMouseListener {
 
 	@Override
 	public void shortClick() {
+		getProcessor().setAlarmStateToDirty();
+		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
 		getProcessor().switchGuiTo(ClockPane.class.getName());
 
 	}
 
 	@Override
 	public void longClick() {
+		getProcessor().setAlarmStateToDirty();
+		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
 		getProcessor().exit();
 	}
 

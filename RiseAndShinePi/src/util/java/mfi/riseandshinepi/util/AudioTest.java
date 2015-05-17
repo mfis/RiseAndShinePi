@@ -19,8 +19,7 @@ public class AudioTest {
 
 		for (int i = 0; i < mixerInfo.length; i++) {
 			System.out.println("- " + i + " -");
-			sb.append("(" + i + ") " + mixerInfo[i].getName() + "\n    "
-					+ mixerInfo[i].getDescription());
+			sb.append("(" + i + ") " + mixerInfo[i].getName() + "\n    " + mixerInfo[i].getDescription());
 			try {
 				audio(mixerInfo[i]);
 			} catch (Exception e) {
@@ -30,8 +29,7 @@ public class AudioTest {
 			Thread.sleep(5000);
 		}
 		if (new File("/home/pi/").exists()) {
-			Files.write(Paths.get("/home/pi/audio.txt"), sb.toString()
-					.getBytes());
+			Files.write(Paths.get("/home/pi/audio.txt"), sb.toString().getBytes());
 		}
 
 		// audio();
@@ -45,8 +43,7 @@ public class AudioTest {
 			url = new File("/Users/mfi/Downloads/test.wav").toURI().toURL();
 		}
 
-		AudioInputStream audioInputStream = AudioSystem
-				.getAudioInputStream(url);
+		AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(url);
 		Clip clip = AudioSystem.getClip(info);
 		clip.open(audioInputStream);
 		clip.start();

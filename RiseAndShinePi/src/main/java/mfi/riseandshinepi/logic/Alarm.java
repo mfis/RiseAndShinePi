@@ -40,9 +40,9 @@ public class Alarm {
 		return sb.toString();
 	}
 
-	public Calendar nextAlarmTime() {
+	public Calendar nextAlarmTime(long now) {
 
-		alarmCalendar.setTimeInMillis(System.currentTimeMillis());
+		alarmCalendar.setTimeInMillis(now);
 		long actHour = alarmCalendar.get(Calendar.HOUR_OF_DAY);
 		long actMinute = alarmCalendar.get(Calendar.MINUTE);
 		long actSecond = alarmCalendar.get(Calendar.SECOND);

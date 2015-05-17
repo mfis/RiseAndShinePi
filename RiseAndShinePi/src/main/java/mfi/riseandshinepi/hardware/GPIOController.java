@@ -25,8 +25,7 @@ public class GPIOController {
 	public void setIO(boolean value, int delay) {
 
 		if (isPWM) {
-			throw new IllegalArgumentException(
-					"No I/O swittching for PWM ports");
+			throw new IllegalArgumentException("No I/O swittching for PWM ports");
 		}
 
 		set(value ? 1 : 0, delay);
@@ -35,8 +34,7 @@ public class GPIOController {
 	public void setPWM(int value, int delay) {
 
 		if (!isPWM) {
-			throw new IllegalArgumentException(
-					"No PWM swittching for I/O ports");
+			throw new IllegalArgumentException("No PWM swittching for I/O ports");
 		}
 
 		set(value, delay);
@@ -78,8 +76,7 @@ public class GPIOController {
 		try {
 			Process p = Runtime.getRuntime().exec(command);
 			p.waitFor();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					p.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
 
 			String line = "";
 			StringBuilder output = new StringBuilder();

@@ -23,6 +23,7 @@ public class Processor implements Constants {
 
 	private Calendar actualCalendar;
 	private Timer alarmTimer;
+	private DisplayOffController displayOffController;
 
 	private List<Alarm> alarms;
 	private Integer activeAlarm = null;
@@ -49,6 +50,8 @@ public class Processor implements Constants {
 	}
 
 	public void initialize() {
+		displayOffController = new DisplayOffController(this);
+		displayOffController.setLastActivity(System.currentTimeMillis());
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
@@ -64,8 +67,6 @@ public class Processor implements Constants {
 	}
 
 	public void switchGuiTo(String name) {
-
-		alarmStateDirty = true;
 
 		if (name.equals(BlankPane.class.getName())) {
 			displayBacklight.dimToPercent(0);
@@ -83,14 +84,15 @@ public class Processor implements Constants {
 			nextAlarm = null;
 			nextAlarmString = null;
 			alarmStateDirty = false;
+			displayOffController.calculate(nextAlarm, System.currentTimeMillis());
 			return;
 		}
 
 		Alarm a = alarms.get(activeAlarm);
-		nextAlarm = a.nextAlarmTime();
+		nextAlarm = a.nextAlarmTime(System.currentTimeMillis());
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
-		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm,
-				actualCalendar);
+		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm, actualCalendar);
+		displayOffController.calculate(nextAlarm, System.currentTimeMillis());
 		alarmStateDirty = false;
 	}
 
@@ -118,9 +120,7 @@ public class Processor implements Constants {
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
 
 		// If alarm is on more than an hour, turn off
-		if (alarmNowOn
-				&& (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar
-						.getTimeInMillis()) {
+		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
 			alarmOff();
 			return;
 		}
@@ -133,6 +133,22 @@ public class Processor implements Constants {
 			alarmOn();
 			return;
 		}
+	}
+
+	public void processDisplayAutoOff() {
+
+		if (gui.getActualPane().equals(BlankPane.class.getName())) {
+			if (displayOffController.autoOnNow(System.currentTimeMillis())) {
+				switchGuiTo(ClockPane.class.getName());
+			}
+		} else {
+			if (!bulb.isState()) {
+				if (displayOffController.autoOffNow(System.currentTimeMillis())) {
+					switchGuiTo(BlankPane.class.getName());
+				}
+			}
+		}
+
 	}
 
 	private void alarmOn() {
@@ -228,6 +244,10 @@ public class Processor implements Constants {
 
 	public DisplayBacklight getDisplayBacklight() {
 		return displayBacklight;
+	}
+
+	public DisplayOffController getDisplayOffController() {
+		return displayOffController;
 	}
 
 }

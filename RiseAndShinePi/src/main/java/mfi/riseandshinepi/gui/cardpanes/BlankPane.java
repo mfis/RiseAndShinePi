@@ -25,8 +25,7 @@ public class BlankPane extends JDesktopPane implements ActionListener {
 	public BlankPane(Processor processor) throws HeadlessException {
 
 		button = new TouchButton("");
-		button.setBounds(0, 0, Gui.applicationSize.width,
-				Gui.applicationSize.height);
+		button.setBounds(0, 0, Gui.applicationSize.width, Gui.applicationSize.height);
 		button.addMouseListener(new BlankPaneMouseListener(processor));
 		button.setName(ClockPane.class.getName());
 		button.setBackground(color);

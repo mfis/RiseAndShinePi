@@ -21,14 +21,14 @@ public class AlarmTimerTask extends TimerTask {
 	@Override
 	public void run() {
 
-		if (!processor.isDevelopmentMode()
-				&& processor.getDisplayBacklight().getActualPercent() > 0) {
+		if (!processor.isDevelopmentMode() && processor.getDisplayBacklight().getActualPercent() > 0) {
 			robot.setAutoDelay(10);
 			robot.keyPress(KeyEvent.VK_R);
 			robot.keyRelease(KeyEvent.VK_R);
 		}
 
 		processor.processAlarmTimer();
+		processor.processDisplayAutoOff();
 	}
 
 }

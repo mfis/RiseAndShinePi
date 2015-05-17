@@ -35,10 +35,7 @@ public class AudioPlayer {
 		files = new LinkedList<File>();
 		mixerInfo = AudioSystem.getMixerInfo()[MIXER_INDEX];
 		if (!this.processor.isDevelopmentMode()) {
-			speakerPowerSwitch = new GPIOController(
-					ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER
-							.valueAsInt(),
-					false);
+			speakerPowerSwitch = new GPIOController(ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER.valueAsInt(), false);
 			speakerPowerSwitch.setIO(false, 0);
 		}
 	}
@@ -53,17 +50,13 @@ public class AudioPlayer {
 	public void start() {
 
 		if (!processor.isDevelopmentMode()) {
-			speakerPowerSwitch.setIO(true,
-					ApplicationProperties.SPEAKER_POWER_ON_DELAY_MILLIES
-							.valueAsInt());
+			speakerPowerSwitch.setIO(true, ApplicationProperties.SPEAKER_POWER_ON_DELAY_MILLIES.valueAsInt());
 		}
 
 		String home = System.getProperty("user.home");
-		File dir = new File(home
-				+ ApplicationProperties.MUSIC_DIR_1_RELATIVE_TO_USER_HOME);
+		File dir = new File(home + ApplicationProperties.MUSIC_DIR_1_RELATIVE_TO_USER_HOME);
 		if (!dir.exists()) {
-			dir = new File(home
-					+ ApplicationProperties.MUSIC_DIR_2_RELATIVE_TO_USER_HOME);
+			dir = new File(home + ApplicationProperties.MUSIC_DIR_2_RELATIVE_TO_USER_HOME);
 		}
 
 		files.clear();

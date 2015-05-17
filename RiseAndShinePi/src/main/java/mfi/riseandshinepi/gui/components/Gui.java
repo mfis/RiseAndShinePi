@@ -16,9 +16,10 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
-import mfi.riseandshinepi.gui.cardpanes.SettingsPane;
+import mfi.riseandshinepi.gui.cardpanes.DisplayAutoOffSettingsPane;
 import mfi.riseandshinepi.listeners.SwitchButtonListener;
 import mfi.riseandshinepi.logic.Processor;
 
@@ -30,12 +31,15 @@ public class Gui extends JFrame {
 
 	private GraphicsDevice device;
 	private ClockPane clockPane;
-	private SettingsPane settingsPane;
+	private AlarmSettingsPane alarmSettingsPane;
+	private DisplayAutoOffSettingsPane displayAutoOffSettingsPane;
 	private BlankPane blankPane;
 	private JPanel contentPane;
 	private SwitchButtonListener switchButtonListener;
 	private DevelopmentPanel developmentPanel;
 	private Processor processor;
+
+	private String actualPane;
 
 	private boolean fullscreen;
 
@@ -46,8 +50,7 @@ public class Gui extends JFrame {
 	public void paintGui() {
 
 		try {
-			UIManager.setLookAndFeel(UIManager
-					.getCrossPlatformLookAndFeelClassName());
+			UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,24 +60,19 @@ public class Gui extends JFrame {
 		frame.setLocationRelativeTo(null);
 		frame.setBackground(Color.BLACK);
 
-		GraphicsEnvironment ge = GraphicsEnvironment
-				.getLocalGraphicsEnvironment();
+		GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		device = ge.getDefaultScreenDevice();
 
 		if (device.isFullScreenSupported() && !processor.isDevelopmentMode()) {
 			frame.setUndecorated(true);
 			device.setFullScreenWindow(frame);
-			int appPixels = new Double(applicationSize.getHeight()).intValue()
-					* new Double(applicationSize.getWidth()).intValue();
-			int displayPixels = device.getDisplayMode().getWidth()
-					* device.getDisplayMode().getHeight();
+			int appPixels = new Double(applicationSize.getHeight()).intValue() * new Double(applicationSize.getWidth()).intValue();
+			int displayPixels = device.getDisplayMode().getWidth() * device.getDisplayMode().getHeight();
 			if (appPixels == displayPixels) {
 				Toolkit toolkit = Toolkit.getDefaultToolkit();
 				Point hotSpot = new Point(0, 0);
-				BufferedImage cursorImage = new BufferedImage(1, 1,
-						BufferedImage.TRANSLUCENT);
-				Cursor invisibleCursor = toolkit.createCustomCursor(
-						cursorImage, hotSpot, "InvisibleCursor");
+				BufferedImage cursorImage = new BufferedImage(1, 1, BufferedImage.TRANSLUCENT);
+				Cursor invisibleCursor = toolkit.createCustomCursor(cursorImage, hotSpot, "InvisibleCursor");
 				frame.setCursor(invisibleCursor);
 			}
 		}
@@ -86,16 +84,17 @@ public class Gui extends JFrame {
 		switchButtonListener = new SwitchButtonListener(processor);
 
 		clockPane = new ClockPane(processor);
-		settingsPane = new SettingsPane(processor);
+		alarmSettingsPane = new AlarmSettingsPane(processor);
+		displayAutoOffSettingsPane = new DisplayAutoOffSettingsPane(processor);
 		blankPane = new BlankPane(processor);
 
 		contentPane.add(clockPane, clockPane.getClass().getName());
-		contentPane.add(settingsPane, settingsPane.getClass().getName());
+		contentPane.add(alarmSettingsPane, alarmSettingsPane.getClass().getName());
+		contentPane.add(displayAutoOffSettingsPane, displayAutoOffSettingsPane.getClass().getName());
 		contentPane.add(blankPane, blankPane.getClass().getName());
 
 		if (processor.isDevelopmentMode()) {
-			developmentPanel = new DevelopmentPanel(contentPane,
-					applicationSize);
+			developmentPanel = new DevelopmentPanel(contentPane, applicationSize);
 			frame.setSize(developmentPanel.getDevelopmentWindowSize());
 			frame.setPreferredSize(developmentPanel.getDevelopmentWindowSize());
 			frame.getContentPane().add(developmentPanel, BorderLayout.CENTER);
@@ -107,15 +106,18 @@ public class Gui extends JFrame {
 
 		frame.pack();
 		frame.setVisible(true);
+
+		actualPane = ClockPane.class.getName();
 	}
 
 	public void switchGuiTo(String name) {
 		if (name.equals(clockPane.getClass().getName())) {
 			clockPane.refreshLabels();
-		} else if (name.equals(settingsPane.getClass().getName())) {
-			settingsPane.refreshButtons();
+		} else if (name.equals(alarmSettingsPane.getClass().getName())) {
+			alarmSettingsPane.refreshButtons();
 		}
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
+		actualPane = name;
 	}
 
 	public DevelopmentPanel getDevelopmentPanel() {
@@ -141,6 +143,10 @@ public class Gui extends JFrame {
 
 	public GraphicsDevice getDevice() {
 		return device;
+	}
+
+	public String getActualPane() {
+		return actualPane;
 	}
 
 }

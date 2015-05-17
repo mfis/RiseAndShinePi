@@ -1,4 +1,5 @@
 package mfi.riseandshinepi.hardware;
+
 import java.io.File;
 import java.util.Iterator;
 import java.util.List;
@@ -51,20 +52,14 @@ public class AudioStreamingThread extends Thread {
 
 		try {
 			encodedInput = AudioSystem.getAudioInputStream(file);
-			decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED,
-					encodedInput.getFormat().getSampleRate(), 16, encodedInput
-							.getFormat().getChannels(), encodedInput
-							.getFormat().getChannels() * 2, encodedInput
-							.getFormat().getSampleRate(), false);
-			decodedInput = AudioSystem.getAudioInputStream(decodedFormat,
-					encodedInput);
+			decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, encodedInput.getFormat().getSampleRate(), 16, encodedInput.getFormat().getChannels(), encodedInput
+					.getFormat().getChannels() * 2, encodedInput.getFormat().getSampleRate(), false);
+			decodedInput = AudioSystem.getAudioInputStream(decodedFormat, encodedInput);
 
-			sourceDataLine = AudioSystem.getSourceDataLine(decodedFormat,
-					mixerInfo);
+			sourceDataLine = AudioSystem.getSourceDataLine(decodedFormat, mixerInfo);
 			sourceDataLine.open(decodedFormat);
 
-			volumeControl = (FloatControl) sourceDataLine
-					.getControl(FloatControl.Type.MASTER_GAIN);
+			volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
 
 			initVolume();
 			setVolume(0);
@@ -122,8 +117,7 @@ public class AudioStreamingThread extends Thread {
 		float max = volumeControl.getMinimum();
 		float range = max - min;
 
-		float percent = (volumeControl.getValue() - volumeControl.getMinimum())
-				/ range * 100;
+		float percent = (volumeControl.getValue() - volumeControl.getMinimum()) / range * 100;
 		actualVolumePercent = (int) percent;
 
 		baseVolume = volumeControl.getValue();

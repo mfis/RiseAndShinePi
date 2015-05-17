@@ -20,6 +20,7 @@ import mfi.riseandshinepi.gui.components.AnalogClock;
 import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.listeners.AnalogClockMouseListener;
+import mfi.riseandshinepi.listeners.SettingsMouseListener;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
 
@@ -56,16 +57,15 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		clockButton = new TouchButton("");
 		clockButton.setBounds(0, 0, 240, 240);
 		clockButton.addMouseListener(new AnalogClockMouseListener(processor));
-		clockButton.setName(SettingsPane.class.getName());
+		clockButton.setName(AlarmSettingsPane.class.getName());
 		clockButton.setBackground(Color.BLACK);
 		clockButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		clockButton.add(clockPanel);
 
 		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
-		switchButton.addActionListener(processor.getGui()
-				.getSwitchButtonListener());
-		switchButton.setName(SettingsPane.class.getName());
+		switchButton.addMouseListener(new SettingsMouseListener(processor));
+		switchButton.setName(AlarmSettingsPane.class.getName());
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 

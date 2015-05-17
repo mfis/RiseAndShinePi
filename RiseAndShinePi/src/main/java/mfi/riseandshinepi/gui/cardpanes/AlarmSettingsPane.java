@@ -14,7 +14,7 @@ import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
 
-public class SettingsPane extends JDesktopPane implements ActionListener {
+public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,7 +26,7 @@ public class SettingsPane extends JDesktopPane implements ActionListener {
 	String[] settingButtonText = new String[] { "+1 Stunde", "+1 Minute", "-1 Stunde", "-1 Minute", "Intervall", "Einmalig" };
 	String[] settingButtonName = new String[] { "+h", "+m", "-h", "-m", "interval", "once" };
 
-	public SettingsPane(Processor processor) throws HeadlessException {
+	public AlarmSettingsPane(Processor processor) throws HeadlessException {
 
 		this.processor = processor;
 
