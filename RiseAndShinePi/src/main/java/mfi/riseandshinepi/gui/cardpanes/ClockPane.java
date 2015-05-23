@@ -3,7 +3,6 @@ package mfi.riseandshinepi.gui.cardpanes;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
@@ -17,14 +16,12 @@ import javax.swing.SwingConstants;
 import javax.swing.Timer;
 
 import mfi.riseandshinepi.gui.components.AnalogClock;
-import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.listeners.AnalogClockMouseListener;
-import mfi.riseandshinepi.listeners.SettingsMouseListener;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
 
-public class ClockPane extends JDesktopPane implements ActionListener {
+public class ClockPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private TouchButton clockButton;
@@ -35,7 +32,7 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 	private Processor processor;
 	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EE, d. MMM yyyy");
 
-	public ClockPane(Processor processor) throws HeadlessException {
+	public ClockPane(Processor processor) {
 
 		this.processor = processor;
 
@@ -64,8 +61,8 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 
 		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
-		switchButton.addMouseListener(new SettingsMouseListener(processor));
-		switchButton.setName(AlarmSettingsPane.class.getName());
+		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
+		switchButton.setName(SettingsSummaryPane.class.getName());
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
@@ -90,8 +87,6 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		p.add(labelNextAlarm);
 		switchButton.add(p);
 
-		refreshLabels();
-
 		this.setBackground(Color.BLACK);
 		this.add(clockButton);
 		this.add(switchButton);
@@ -99,7 +94,8 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 		timer.start();
 	}
 
-	public void refreshLabels() {
+	@Override
+	public void refresh() {
 
 		labelActualDate.setText(sdf.format(new Date()));
 
@@ -114,13 +110,8 @@ public class ClockPane extends JDesktopPane implements ActionListener {
 	}
 
 	@Override
-	public Dimension getPreferredSize() {
-		return (Gui.applicationSize);
-	}
-
-	@Override
 	public void actionPerformed(ActionEvent e) {
-		refreshLabels();
+		refresh();
 
 	}
 

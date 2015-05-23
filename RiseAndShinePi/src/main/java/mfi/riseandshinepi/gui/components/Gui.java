@@ -3,6 +3,7 @@ package mfi.riseandshinepi.gui.components;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GraphicsDevice;
@@ -16,10 +17,13 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import mfi.riseandshinepi.gui.cardpanes.AbstractPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
 import mfi.riseandshinepi.gui.cardpanes.DisplayAutoOffSettingsPane;
+import mfi.riseandshinepi.gui.cardpanes.SettingsSummaryPane;
+import mfi.riseandshinepi.gui.cardpanes.VolumeAndBacklightSettingsPane;
 import mfi.riseandshinepi.listeners.SwitchButtonListener;
 import mfi.riseandshinepi.logic.Processor;
 
@@ -34,6 +38,8 @@ public class Gui extends JFrame {
 	private AlarmSettingsPane alarmSettingsPane;
 	private DisplayAutoOffSettingsPane displayAutoOffSettingsPane;
 	private BlankPane blankPane;
+	private SettingsSummaryPane settingsSummaryPane;
+	private VolumeAndBacklightSettingsPane volumeAndBacklightSettingsPane;
 	private JPanel contentPane;
 	private SwitchButtonListener switchButtonListener;
 	private DevelopmentPanel developmentPanel;
@@ -87,11 +93,15 @@ public class Gui extends JFrame {
 		alarmSettingsPane = new AlarmSettingsPane(processor);
 		displayAutoOffSettingsPane = new DisplayAutoOffSettingsPane(processor);
 		blankPane = new BlankPane(processor);
+		settingsSummaryPane = new SettingsSummaryPane(processor);
+		volumeAndBacklightSettingsPane = new VolumeAndBacklightSettingsPane(processor);
 
 		contentPane.add(clockPane, clockPane.getClass().getName());
 		contentPane.add(alarmSettingsPane, alarmSettingsPane.getClass().getName());
 		contentPane.add(displayAutoOffSettingsPane, displayAutoOffSettingsPane.getClass().getName());
 		contentPane.add(blankPane, blankPane.getClass().getName());
+		contentPane.add(settingsSummaryPane, settingsSummaryPane.getClass().getName());
+		contentPane.add(volumeAndBacklightSettingsPane, volumeAndBacklightSettingsPane.getClass().getName());
 
 		if (processor.isDevelopmentMode()) {
 			developmentPanel = new DevelopmentPanel(contentPane, applicationSize);
@@ -111,10 +121,11 @@ public class Gui extends JFrame {
 	}
 
 	public void switchGuiTo(String name) {
-		if (name.equals(clockPane.getClass().getName())) {
-			clockPane.refreshLabels();
-		} else if (name.equals(alarmSettingsPane.getClass().getName())) {
-			alarmSettingsPane.refreshButtons();
+		for (Component c : contentPane.getComponents()) {
+			if (c != null && c.getClass().getName().equals(name) && c instanceof AbstractPane) {
+				((AbstractPane) c).refresh();
+				break;
+			}
 		}
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
 		actualPane = name;

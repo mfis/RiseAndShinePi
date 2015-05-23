@@ -1,20 +1,16 @@
 package mfi.riseandshinepi.gui.cardpanes;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JDesktopPane;
-
-import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.gui.components.TouchLabel;
 import mfi.riseandshinepi.logic.ApplicationProperties;
 import mfi.riseandshinepi.logic.Processor;
 
-public class DisplayAutoOffSettingsPane extends JDesktopPane implements ActionListener {
+public class DisplayAutoOffSettingsPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -70,8 +66,6 @@ public class DisplayAutoOffSettingsPane extends JDesktopPane implements ActionLi
 			this.add(displayOffButton[i]);
 		}
 
-		refresh();
-
 		switchButton = new TouchButton("Uhr anzeigen");
 		switchButton.setBounds(0, 280, 240, 40);
 		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
@@ -79,7 +73,6 @@ public class DisplayAutoOffSettingsPane extends JDesktopPane implements ActionLi
 		this.add(switchButton);
 
 		this.setBackground(Color.BLACK);
-
 	}
 
 	@Override
@@ -126,6 +119,7 @@ public class DisplayAutoOffSettingsPane extends JDesktopPane implements ActionLi
 		refresh();
 	}
 
+	@Override
 	public void refresh() {
 
 		for (int i = 0; i < displayOnLabelText.length; i++) {
@@ -142,11 +136,6 @@ public class DisplayAutoOffSettingsPane extends JDesktopPane implements ActionLi
 			displayOffLabel[i].setText(text);
 		}
 
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return (Gui.applicationSize);
 	}
 
 }

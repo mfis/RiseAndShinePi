@@ -32,8 +32,6 @@ public class Processor implements Constants {
 	private boolean alarmNowOn = false;
 	private boolean alarmStateDirty;
 
-	private int backlightLevel = 90; // FIXME: user properties
-
 	public Processor(boolean developmentMode) {
 		super();
 		ApplicationProperties.init();
@@ -60,7 +58,7 @@ public class Processor implements Constants {
 
 	private void initializeHardware() {
 		switchGuiTo(ClockPane.class.getName());
-		displayBacklight.dimToPercent(backlightLevel);
+		displayBacklight.dimToPercent(displayBacklight.getDefaultPercent());
 		bulb.switchTo(false);
 		audioPlayer = new AudioPlayer(this);
 		turnOffBulb();
@@ -72,7 +70,7 @@ public class Processor implements Constants {
 			displayBacklight.dimToPercent(0);
 			turnOffBulb();
 		} else {
-			displayBacklight.dimToPercent(backlightLevel);
+			displayBacklight.dimToPercent(displayBacklight.getDefaultPercent());
 		}
 
 		gui.switchGuiTo(name);
@@ -248,6 +246,10 @@ public class Processor implements Constants {
 
 	public DisplayOffController getDisplayOffController() {
 		return displayOffController;
+	}
+
+	public AudioPlayer getAudioPlayer() {
+		return audioPlayer;
 	}
 
 }

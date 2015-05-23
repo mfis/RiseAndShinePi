@@ -12,6 +12,7 @@ public class DisplayBacklight {
 	private GPIOController backlightModulator;
 
 	private int actualPercent;
+	private int defaultPercent = ApplicationProperties.DISPLAY_BACKLIGHT_DEFAULT_PERCENT.valueAsInt();
 
 	public DisplayBacklight(Processor processor) {
 		this.processor = processor;
@@ -30,17 +31,17 @@ public class DisplayBacklight {
 	}
 
 	private void dimToPercentInSimulation(int percent) {
+		Color color;
 		if (percent == 0) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.BLACK);
-		} else if (percent < 30) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.DARK_GRAY);
-		} else if (percent < 50) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.GRAY);
-		} else if (percent < 100) {
-			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.LIGHT_GRAY);
+			color = new Color(0, 0, 0);
+		} else if (percent == 100) {
+			color = new Color(255, 255, 255);
 		} else {
-			processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(Color.WHITE);
+			float rgb = 255f / 100f * (percent);
+			int rgbInt = (int) rgb;
+			color = new Color(rgbInt, rgbInt, rgbInt);
 		}
+		processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(color);
 	}
 
 	private void dimToPercentInHardware(int percent) {
@@ -49,6 +50,14 @@ public class DisplayBacklight {
 
 	public int getActualPercent() {
 		return actualPercent;
+	}
+
+	public int getDefaultPercent() {
+		return defaultPercent;
+	}
+
+	public void setDefaultPercent(int defaultPercent) {
+		this.defaultPercent = defaultPercent;
 	}
 
 }

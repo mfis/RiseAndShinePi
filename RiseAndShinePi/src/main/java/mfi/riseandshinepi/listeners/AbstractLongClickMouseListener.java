@@ -22,16 +22,19 @@ public abstract class AbstractLongClickMouseListener extends MouseAdapter {
 	public final void mousePressed(MouseEvent e) {
 
 		eventFired = false;
-		if (t == null) {
-			t = new java.util.Timer();
-		}
-		t.schedule(new TimerTask() {
-			@Override
-			public void run() {
-				eventFired = true;
-				longClick();
+		if (timespan > 0) {
+			if (t == null) {
+				t = new java.util.Timer();
 			}
-		}, timespan);
+			t.schedule(new TimerTask() {
+				@Override
+				public void run() {
+					eventFired = true;
+					clickEvents();
+					longClick();
+				}
+			}, timespan);
+		}
 	}
 
 	@Override
@@ -42,9 +45,19 @@ public abstract class AbstractLongClickMouseListener extends MouseAdapter {
 			t = null;
 			if (!eventFired) {
 				eventFired = true;
+				clickEvents();
 				shortClick();
 			}
+		} else {
+			eventFired = true;
+			clickEvents();
+			shortClick();
 		}
+	}
+
+	private void clickEvents() {
+		getProcessor().setAlarmStateToDirty();
+		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
 	}
 
 	public abstract void shortClick();

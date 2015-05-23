@@ -25,8 +25,10 @@ public class AudioPlayer {
 
 	private List<File> files;
 	private Info mixerInfo;
+	private Integer targetVolume = null;
 
 	private AudioStreamingThread streamingThread;
+	private boolean playing = false;
 
 	private Processor processor;
 
@@ -71,8 +73,9 @@ public class AudioPlayer {
 		}
 		Collections.shuffle(files);
 
-		streamingThread = new AudioStreamingThread(mixerInfo, files);
+		streamingThread = new AudioStreamingThread(mixerInfo, files, targetVolume);
 		streamingThread.start();
+		playing = true;
 	}
 
 	public void stop() {
@@ -83,6 +86,7 @@ public class AudioPlayer {
 		if (!processor.isDevelopmentMode()) {
 			speakerPowerSwitch.setIO(false, 0);
 		}
+		playing = false;
 	}
 
 	public void setVolumePercent(int percent) {
@@ -95,6 +99,18 @@ public class AudioPlayer {
 		if (streamingThread != null && streamingThread.isAlive()) {
 			streamingThread.setVolume(percent);
 		}
+		targetVolume = percent;
+	}
+
+	public boolean isPlaying() {
+		return playing;
+	}
+
+	public Integer getActualVolumePercent() {
+		if (playing) {
+			return streamingThread.getActualVolumePercent();
+		}
+		return targetVolume;
 	}
 
 }

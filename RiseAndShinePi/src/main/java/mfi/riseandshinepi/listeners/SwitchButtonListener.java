@@ -17,7 +17,6 @@ public class SwitchButtonListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-
 		processor.setAlarmStateToDirty();
 		processor.getDisplayOffController().setLastActivity(System.currentTimeMillis());
 		processor.switchGuiTo(((JButton) e.getSource()).getName());

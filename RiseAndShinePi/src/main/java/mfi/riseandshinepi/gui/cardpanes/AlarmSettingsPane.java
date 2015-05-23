@@ -1,20 +1,16 @@
 package mfi.riseandshinepi.gui.cardpanes;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JDesktopPane;
 
-import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
 
-public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
+public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 
@@ -26,7 +22,7 @@ public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 	String[] settingButtonText = new String[] { "+1 Stunde", "+1 Minute", "-1 Stunde", "-1 Minute", "Intervall", "Einmalig" };
 	String[] settingButtonName = new String[] { "+h", "+m", "-h", "-m", "interval", "once" };
 
-	public AlarmSettingsPane(Processor processor) throws HeadlessException {
+	public AlarmSettingsPane(Processor processor) {
 
 		this.processor = processor;
 
@@ -51,8 +47,6 @@ public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 			this.add(settingButton[i]);
 		}
 
-		refreshButtons();
-
 		switchButton = new TouchButton("Uhr anzeigen");
 		switchButton.setBounds(0, 280, 240, 40);
 		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
@@ -60,7 +54,6 @@ public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 		this.add(switchButton);
 
 		this.setBackground(Color.BLACK);
-
 	}
 
 	@Override
@@ -120,10 +113,11 @@ public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 			processor.getAlarms().get(processor.getActiveAlarm()).setHour(h);
 			processor.getAlarms().get(processor.getActiveAlarm()).setMinute(m);
 		}
-		refreshButtons();
+		refresh();
 	}
 
-	public void refreshButtons() {
+	@Override
+	public void refresh() {
 
 		for (int i = 0; i < processor.getAlarms().size(); i++) {
 			if (processor.getActiveAlarm() != null && processor.getActiveAlarm() == i) {
@@ -137,11 +131,6 @@ public class AlarmSettingsPane extends JDesktopPane implements ActionListener {
 		for (int i = 0; i < settingButton.length; i++) {
 			settingButton[i].setVisible(processor.getActiveAlarm() != null);
 		}
-	}
-
-	@Override
-	public Dimension getPreferredSize() {
-		return (Gui.applicationSize);
 	}
 
 }

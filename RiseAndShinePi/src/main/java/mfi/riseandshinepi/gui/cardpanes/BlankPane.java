@@ -1,32 +1,28 @@
 package mfi.riseandshinepi.gui.cardpanes;
 
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.JDesktopPane;
 import javax.swing.Timer;
 
 import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
-import mfi.riseandshinepi.listeners.BlankPaneMouseListener;
 import mfi.riseandshinepi.logic.Processor;
 
-public class BlankPane extends JDesktopPane implements ActionListener {
+public class BlankPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private TouchButton button;
 	private final Timer timer = new Timer(10000, this);
 	private Color color = Color.BLACK;
 
-	public BlankPane(Processor processor) throws HeadlessException {
+	public BlankPane(Processor processor) {
 
 		button = new TouchButton("");
 		button.setBounds(0, 0, Gui.applicationSize.width, Gui.applicationSize.height);
-		button.addMouseListener(new BlankPaneMouseListener(processor));
+		button.addActionListener(processor.getGui().getSwitchButtonListener());
 		button.setName(ClockPane.class.getName());
 		button.setBackground(color);
 		button.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
@@ -56,8 +52,8 @@ public class BlankPane extends JDesktopPane implements ActionListener {
 	}
 
 	@Override
-	public Dimension getPreferredSize() {
-		return (Gui.applicationSize);
+	public void refresh() {
+		// noop
 	}
 
 }

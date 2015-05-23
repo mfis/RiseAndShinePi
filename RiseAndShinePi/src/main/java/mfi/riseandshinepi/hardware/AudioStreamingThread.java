@@ -25,16 +25,18 @@ public class AudioStreamingThread extends Thread {
 	private int actualVolumePercent;
 	private float baseVolume;
 	private int basePercent;
+	private Integer targetVolume;
 
 	private boolean continuePlaying;
 	private boolean runningStream;
 
-	public AudioStreamingThread(Info mixerInfo, List<File> files) {
+	public AudioStreamingThread(Info mixerInfo, List<File> files, Integer targetVolume) {
 		super();
 		this.mixerInfo = mixerInfo;
 		this.files = files;
 		this.continuePlaying = true;
 		this.runningStream = false;
+		this.targetVolume = targetVolume;
 	}
 
 	@Override
@@ -76,7 +78,12 @@ public class AudioStreamingThread extends Thread {
 					sourceDataLine.write(data, 0, bytesRead);
 				}
 				if (firstLoop) {
-					setBaseVolume();
+					if (targetVolume != null) {
+						setVolume(targetVolume);
+						targetVolume = null;
+					} else {
+						setBaseVolume();
+					}
 					firstLoop = false;
 				}
 			}
@@ -114,7 +121,7 @@ public class AudioStreamingThread extends Thread {
 		// System.out.println("init Act=" + volumeControl.getValue());
 
 		float min = volumeControl.getMinimum();
-		float max = volumeControl.getMinimum();
+		float max = volumeControl.getMaximum();
 		float range = max - min;
 
 		float percent = (volumeControl.getValue() - volumeControl.getMinimum()) / range * 100;
@@ -154,5 +161,9 @@ public class AudioStreamingThread extends Thread {
 
 	public boolean isRunningStream() {
 		return runningStream;
+	}
+
+	public int getActualVolumePercent() {
+		return actualVolumePercent;
 	}
 }

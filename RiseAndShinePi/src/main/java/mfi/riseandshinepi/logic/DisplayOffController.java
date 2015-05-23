@@ -28,6 +28,7 @@ public class DisplayOffController {
 
 	private Alarm calculator;
 
+	@SuppressWarnings("unused")
 	private Processor processor;
 
 	public DisplayOffController(Processor processor) {
@@ -61,15 +62,15 @@ public class DisplayOffController {
 		cal.add(Calendar.MINUTE, ApplicationProperties.DISPLAY_OFF_X_MINUTES_IN_INACTIVITY.valueAsInt());
 		autoOffDueToInactivity = new Date(cal.getTimeInMillis());
 
-		if (processor.isDevelopmentMode()) {
-			System.out.println("---------------------------------------------");
-			System.out.println("autoOffDueToFixTime = " + autoOffDueToFixTime);
-			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity);
-			System.out.println("autoOnDueToFixTime = " + autoOnDueToFixTime);
-			System.out.println("autoOnDueToAlarmTime = " + autoOnDueToAlarmTime);
-			System.out.println("---------------------------------------------");
-
-		}
+		// if (processor.isDevelopmentMode()) {
+		// System.out.println("---------------------------------------------");
+		// System.out.println("autoOffDueToFixTime = " + autoOffDueToFixTime);
+		// System.out.println("autoOffDueToInactivity = " +
+		// autoOffDueToInactivity);
+		// System.out.println("autoOnDueToFixTime = " + autoOnDueToFixTime);
+		// System.out.println("autoOnDueToAlarmTime = " + autoOnDueToAlarmTime);
+		// System.out.println("---------------------------------------------");
+		// }
 	}
 
 	public boolean autoOffNow(long nowInLong) {

@@ -1,6 +1,3 @@
-- more than one active alarm
-- snooze function (e.g. with third alarm time which is reserved for snooze)
-- refreh panes over interface method
-- exceptionhandling (audio player etc)
-- settings pane for volume and backlight
-- remove long click listeners
+- todo: exceptionhandling (audio player etc)
+- feature: more than one active alarm
+- feature: snooze function (e.g. with third alarm time which is reserved for snooze)
