@@ -22,6 +22,7 @@ public class Processor implements Constants {
 	private AudioPlayer audioPlayer;
 
 	private Calendar actualCalendar;
+	private int dayInYear = -1;
 	private Timer alarmTimer;
 	private DisplayOffController displayOffController;
 
@@ -104,6 +105,13 @@ public class Processor implements Constants {
 
 	public void processAlarmTimer() {
 
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
+		if (newDayInYear != dayInYear) {
+			alarmStateDirty = true;
+			dayInYear = newDayInYear;
+		}
+
 		if (alarmStateDirty) {
 			calculateNextAlarm();
 		}
@@ -114,8 +122,6 @@ public class Processor implements Constants {
 			}
 			return;
 		}
-
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
 
 		// If alarm is on more than an hour, turn off
 		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {

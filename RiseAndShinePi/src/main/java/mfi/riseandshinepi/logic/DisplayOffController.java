@@ -3,6 +3,8 @@ package mfi.riseandshinepi.logic;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
+import java.util.List;
 
 public class DisplayOffController {
 
@@ -16,39 +18,41 @@ public class DisplayOffController {
 
 	// internal
 
-	private Date autoOffDueToFixTime;
+	private List<Integer> onFixHours = new LinkedList<Integer>();
 
 	private Date autoOffDueToInactivity;
-
-	private Date autoOnDueToFixTime;
 
 	private Date autoOnDueToAlarmTime;
 
 	private Date now;
 
-	private Alarm calculator;
+	private Calendar cal = new GregorianCalendar();
 
-	@SuppressWarnings("unused")
 	private Processor processor;
 
 	public DisplayOffController(Processor processor) {
 		now = new Date();
 		this.processor = processor;
 		lastActivity = new Date();
-		calculator = new Alarm(0, 0, false, true);
 	}
 
 	public void calculate(Calendar nextAlarm, long nowInLong) {
 
 		now.setTime(nowInLong);
 
-		calculator.setHour(displayOffFixHour);
-		autoOffDueToFixTime = calculator.nextAlarmTime(nowInLong).getTime();
-
-		calculator.setHour(displayOnFixHour);
-		autoOnDueToFixTime = calculator.nextAlarmTime(nowInLong).getTime();
-
-		Calendar cal = new GregorianCalendar();
+		onFixHours.clear();
+		int x = displayOnFixHour;
+		for (int h = 0; h < 23; h++) {
+			if (x > 23) {
+				x = 0;
+			}
+			if (x == displayOffFixHour) {
+				break;
+			} else {
+				onFixHours.add(x);
+			}
+			x++;
+		}
 
 		if (nextAlarm != null) {
 			cal.setTimeInMillis(nextAlarm.getTimeInMillis());
@@ -62,15 +66,13 @@ public class DisplayOffController {
 		cal.add(Calendar.MINUTE, ApplicationProperties.DISPLAY_OFF_X_MINUTES_IN_INACTIVITY.valueAsInt());
 		autoOffDueToInactivity = new Date(cal.getTimeInMillis());
 
-		// if (processor.isDevelopmentMode()) {
-		// System.out.println("---------------------------------------------");
-		// System.out.println("autoOffDueToFixTime = " + autoOffDueToFixTime);
-		// System.out.println("autoOffDueToInactivity = " +
-		// autoOffDueToInactivity);
-		// System.out.println("autoOnDueToFixTime = " + autoOnDueToFixTime);
-		// System.out.println("autoOnDueToAlarmTime = " + autoOnDueToAlarmTime);
-		// System.out.println("---------------------------------------------");
-		// }
+		if (processor.isDevelopmentMode()) {
+			System.out.println("---------------------------------------------");
+			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity);
+			System.out.println("autoOnDueToAlarmTime = " + autoOnDueToAlarmTime);
+			System.out.println("onFixHours = " + onFixHours.toString());
+			System.out.println("---------------------------------------------");
+		}
 	}
 
 	public boolean autoOffNow(long nowInLong) {
@@ -78,12 +80,14 @@ public class DisplayOffController {
 		if (autoOnNow(nowInLong)) {
 			return false;
 		}
-		return now.after(autoOffDueToInactivity) || now.after(autoOffDueToFixTime);
+		return now.after(autoOffDueToInactivity);
 	}
 
 	public boolean autoOnNow(long nowInLong) {
 		now.setTime(nowInLong);
-		return now.after(autoOnDueToFixTime) || (autoOnDueToAlarmTime != null && now.after(autoOnDueToAlarmTime));
+		cal.setTimeInMillis(nowInLong);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);
+		return onFixHours.contains(hour) || (autoOnDueToAlarmTime != null && now.after(autoOnDueToAlarmTime));
 	}
 
 	public void setLastActivity(long now) {
