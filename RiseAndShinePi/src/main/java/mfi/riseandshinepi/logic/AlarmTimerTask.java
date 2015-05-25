@@ -5,6 +5,8 @@ import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.util.TimerTask;
 
+import mfi.riseandshinepi.gui.cardpanes.BlankPane;
+
 public class AlarmTimerTask extends TimerTask {
 
 	private Processor processor;
@@ -21,10 +23,12 @@ public class AlarmTimerTask extends TimerTask {
 	@Override
 	public void run() {
 
-		if (!processor.isDevelopmentMode() && processor.getDisplayBacklight().getActualPercent() > 0) {
-			robot.setAutoDelay(10);
-			robot.keyPress(KeyEvent.VK_R);
-			robot.keyRelease(KeyEvent.VK_R);
+		if (!processor.isDevelopmentMode()) {
+			if (processor.getDisplayBacklight().getActualPercent() > 0 && !processor.getGui().getActualPane().equals(BlankPane.class.getName())) {
+				robot.setAutoDelay(10);
+				robot.keyPress(KeyEvent.VK_R);
+				robot.keyRelease(KeyEvent.VK_R);
+			}
 		}
 
 		processor.processAlarmTimer();
