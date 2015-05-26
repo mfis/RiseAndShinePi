@@ -105,25 +105,25 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 
 		switch (name) {
 		case "dispBL+":
-			backlight += 5;
+			backlight += 2;
 			if (backlight > 100) {
 				backlight = 100;
 			}
 			break;
 		case "dispBL-":
-			backlight -= 5;
-			if (backlight < 10) {
-				backlight = 10;
+			backlight -= 2;
+			if (backlight < 2) {
+				backlight = 2;
 			}
 			break;
 		case "vol+":
-			vol += 5;
+			vol += 2;
 			if (vol > 100) {
 				vol = 100;
 			}
 			break;
 		case "vol-":
-			vol -= 5;
+			vol -= 2;
 			if (vol < 10) {
 				vol = 10;
 			}

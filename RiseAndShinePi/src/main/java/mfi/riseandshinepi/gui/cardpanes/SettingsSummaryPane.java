@@ -41,7 +41,7 @@ public class SettingsSummaryPane extends AbstractPane {
 		displayAutoOffSettingsButton.setName(DisplayAutoOffSettingsPane.class.getName());
 		this.add(displayAutoOffSettingsButton);
 
-		exitButton = new TouchButton("Ausschalten (lange drücken)");
+		exitButton = new TouchButton("Ausschalten (halten)");
 		exitButton.setBounds(0, 180, 240, 40);
 		exitButton.addMouseListener(new ExitButtonMouseListener(processor));
 		exitButton.setName(DisplayAutoOffSettingsPane.class.getName());
