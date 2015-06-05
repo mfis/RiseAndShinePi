@@ -59,7 +59,7 @@ public class Processor implements Constants {
 
 	private void initializeHardware() {
 		switchGuiTo(ClockPane.class.getName());
-		displayBacklight.dimToPercent(displayBacklight.getDefaultPercent());
+		displayBacklight.dimToValue(displayBacklight.getDefaultValue());
 		bulb.switchTo(false);
 		audioPlayer = new AudioPlayer(this);
 		turnOffBulb();
@@ -68,10 +68,10 @@ public class Processor implements Constants {
 	public void switchGuiTo(String name) {
 
 		if (name.equals(BlankPane.class.getName())) {
-			displayBacklight.dimToPercent(0);
+			displayBacklight.dimToValue(0);
 			turnOffBulb();
 		} else {
-			displayBacklight.dimToPercent(displayBacklight.getDefaultPercent());
+			displayBacklight.dimToValue(displayBacklight.getDefaultValue());
 		}
 
 		gui.switchGuiTo(name);
@@ -198,7 +198,7 @@ public class Processor implements Constants {
 
 		audioPlayer.stop();
 		turnOffBulb();
-		displayBacklight.dimToPercent(90);
+		displayBacklight.dimToValue(DisplayBacklight.MAX_VALUE);
 
 		if (!isDevelopmentMode()) {
 			try {

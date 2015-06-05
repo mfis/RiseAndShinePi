@@ -24,7 +24,7 @@ public class AlarmTimerTask extends TimerTask {
 	public void run() {
 
 		if (!processor.isDevelopmentMode()) {
-			if (processor.getDisplayBacklight().getActualPercent() > 0 && !processor.getGui().getActualPane().equals(BlankPane.class.getName())) {
+			if (processor.getDisplayBacklight().getActualValue() > 0 && !processor.getGui().getActualPane().equals(BlankPane.class.getName())) {
 				robot.setAutoDelay(10);
 				robot.keyPress(KeyEvent.VK_R);
 				robot.keyRelease(KeyEvent.VK_R);

@@ -8,6 +8,7 @@ import javax.swing.Timer;
 
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.gui.components.TouchLabel;
+import mfi.riseandshinepi.hardware.DisplayBacklight;
 import mfi.riseandshinepi.logic.Processor;
 
 public class VolumeAndBacklightSettingsPane extends AbstractPane implements ActionListener {
@@ -17,7 +18,7 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 	private Processor processor;
 
 	private TouchLabel[] displayBacklightLabel;
-	private String[] displayBacklightLabelText = new String[] { "Display-Helligkeit", "##1 %" };
+	private String[] displayBacklightLabelText = new String[] { "Display-Helligkeit", "##1 / " + DisplayBacklight.MAX_VALUE };
 	private TouchButton[] displayOnButton;
 	private String[] displayBacklightButtonText = new String[] { "heller", "dunkler" };
 	private String[] displayBlacklightButtonName = new String[] { "dispBL+", "dispBL-" };
@@ -98,22 +99,22 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 
 		String name = ((TouchButton) e.getSource()).getName();
 
-		int backlight = processor.getDisplayBacklight().getActualPercent();
+		int backlight = processor.getDisplayBacklight().getActualValue();
 		int vol = processor.getAudioPlayer().getActualVolumePercent() != null ? processor.getAudioPlayer().getActualVolumePercent() : 0;
 		int backlightBefore = backlight;
 		int volBefore = vol;
 
 		switch (name) {
 		case "dispBL+":
-			backlight += 2;
-			if (backlight > 100) {
-				backlight = 100;
+			backlight++;
+			if (backlight > DisplayBacklight.MAX_VALUE) {
+				backlight = DisplayBacklight.MAX_VALUE;
 			}
 			break;
 		case "dispBL-":
-			backlight -= 2;
-			if (backlight < 2) {
-				backlight = 2;
+			backlight--;
+			if (backlight < DisplayBacklight.MIN_VALUE) {
+				backlight = DisplayBacklight.MIN_VALUE;
 			}
 			break;
 		case "vol+":
@@ -138,8 +139,8 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 		}
 
 		if (backlight != backlightBefore) {
-			processor.getDisplayBacklight().dimToPercent(backlight);
-			processor.getDisplayBacklight().setDefaultPercent(backlight);
+			processor.getDisplayBacklight().dimToValue(backlight);
+			processor.getDisplayBacklight().setDefaultValue(backlight);
 		}
 		if (vol != volBefore) {
 			processor.getAudioPlayer().setVolumePercent(vol);
@@ -153,7 +154,7 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 
 		for (int i = 0; i < displayBacklightLabelText.length; i++) {
 			String text = displayBacklightLabelText[i];
-			text = text.replace("##1", Integer.toString(processor.getDisplayBacklight().getActualPercent()));
+			text = text.replace("##1", Integer.toString(processor.getDisplayBacklight().getActualValue()));
 			displayBacklightLabel[i].setText(text);
 		}
 

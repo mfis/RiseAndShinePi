@@ -42,12 +42,12 @@ public class AudioPlayer {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		AudioPlayer ap = new AudioPlayer(new Processor(true));
-		ap.start();
-		Thread.sleep(5000);
-		ap.stop();
-	}
+	// public static void main(String[] args) throws InterruptedException {
+	// AudioPlayer ap = new AudioPlayer(new Processor(true));
+	// ap.start();
+	// Thread.sleep(5000);
+	// ap.stop();
+	// }
 
 	public void start() {
 

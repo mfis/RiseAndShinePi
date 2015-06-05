@@ -8,11 +8,13 @@ import mfi.riseandshinepi.logic.Processor;
 public class DisplayBacklight {
 
 	private Processor processor;
-
 	private GPIOController backlightModulator;
 
-	private int actualPercent;
-	private int defaultPercent = ApplicationProperties.DISPLAY_BACKLIGHT_DEFAULT_PERCENT.valueAsInt();
+	public final static int MIN_VALUE = 1;
+	public final static int MAX_VALUE = 20;
+
+	private int actualValue;
+	private int defaultValue = ApplicationProperties.DISPLAY_BACKLIGHT_DEFAULT_VALUE.valueAsInt();
 
 	public DisplayBacklight(Processor processor) {
 		this.processor = processor;
@@ -21,43 +23,44 @@ public class DisplayBacklight {
 		}
 	}
 
-	public void dimToPercent(int percent) {
-		actualPercent = percent;
+	public void dimToValue(int value) {
+		actualValue = value;
 		if (processor.isDevelopmentMode()) {
-			dimToPercentInSimulation(percent);
+			dimToValueInSimulation(value);
 		} else {
-			dimToPercentInHardware(percent);
+			dimToValueInHardware(value);
 		}
 	}
 
-	private void dimToPercentInSimulation(int percent) {
+	private void dimToValueInSimulation(int value) {
 		Color color;
-		if (percent == 0) {
+		if (value == 0) {
 			color = new Color(0, 0, 0);
-		} else if (percent == 100) {
+		} else if (value == 100) {
 			color = new Color(255, 255, 255);
 		} else {
-			float rgb = 255f / 100f * (percent);
+			float rgb = 255f / MAX_VALUE * (value);
 			int rgbInt = (int) rgb;
 			color = new Color(rgbInt, rgbInt, rgbInt);
 		}
 		processor.getGui().getDevelopmentPanel().getBacklightPane().setBackground(color);
 	}
 
-	private void dimToPercentInHardware(int percent) {
-		backlightModulator.setPWM(percent * 10, 0); // hardware max = 1023
+	private void dimToValueInHardware(int value) {
+		int y = (int) Math.round((Math.pow(value, 3) / 12f) + (value * 1));
+		backlightModulator.setPWM(y, 0); // hardware max = 1023
 	}
 
-	public int getActualPercent() {
-		return actualPercent;
+	public int getActualValue() {
+		return actualValue;
 	}
 
-	public int getDefaultPercent() {
-		return defaultPercent;
+	public int getDefaultValue() {
+		return defaultValue;
 	}
 
-	public void setDefaultPercent(int defaultPercent) {
-		this.defaultPercent = defaultPercent;
+	public void setDefaultValue(int defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 
 }
