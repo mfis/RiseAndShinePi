@@ -1,3 +1,5 @@
+- bug: alarm music stops after one song
+- usability: sort +/- buttons
 - todo: exceptionhandling (audio player etc)
 - feature: more than one active alarm
 - feature: snooze function (e.g. with third alarm time which is reserved for snooze)
