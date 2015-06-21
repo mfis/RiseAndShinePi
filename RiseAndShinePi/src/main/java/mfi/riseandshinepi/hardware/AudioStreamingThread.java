@@ -48,6 +48,7 @@ public class AudioStreamingThread extends Thread {
 		while (fileIterator.hasNext() && continuePlaying) {
 			stream(fileIterator.next());
 		}
+		stopStreaming();
 	}
 
 	private void stream(File file) {
@@ -105,7 +106,6 @@ public class AudioStreamingThread extends Thread {
 				encodedInput.close();
 			} catch (Exception e) {/**/
 			}
-			continuePlaying = false;
 			runningStream = false;
 		}
 	}
