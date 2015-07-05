@@ -42,10 +42,10 @@ public class AudioPlayer {
 		}
 	}
 
-	public static void main(String[] args) throws InterruptedException {
-		AudioPlayer ap = new AudioPlayer(new Processor(true));
-		ap.start();
-	}
+	// public static void main(String[] args) throws InterruptedException {
+	// AudioPlayer ap = new AudioPlayer(new Processor(true));
+	// ap.start();
+	// }
 
 	public void start() {
 

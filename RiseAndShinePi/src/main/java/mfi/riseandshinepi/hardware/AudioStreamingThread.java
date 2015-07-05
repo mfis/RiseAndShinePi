@@ -43,7 +43,6 @@ public class AudioStreamingThread extends Thread {
 	public void run() {
 
 		super.run();
-
 		Iterator<File> fileIterator = files.iterator();
 		while (fileIterator.hasNext() && continuePlaying) {
 			stream(fileIterator.next());
