@@ -16,6 +16,7 @@ public class AudioPlayer {
 
 	private final static int MIXER_INDEX = 0;
 	private static ArrayList<String> FILE_SUFFIXES = new ArrayList<String>();
+
 	static {
 		FILE_SUFFIXES.add("mp3");
 		FILE_SUFFIXES.add("ogg");
@@ -24,6 +25,7 @@ public class AudioPlayer {
 	private GPIOController speakerPowerSwitch;
 
 	private List<File> files;
+	private int fileIndex = 0;
 	private Info mixerInfo;
 	private Integer targetVolume = null;
 
@@ -33,24 +35,14 @@ public class AudioPlayer {
 	private Processor processor;
 
 	public AudioPlayer(Processor processor) {
+
 		this.processor = processor;
 		files = new LinkedList<File>();
 		mixerInfo = AudioSystem.getMixerInfo()[MIXER_INDEX];
 		if (!this.processor.isDevelopmentMode()) {
-			speakerPowerSwitch = new GPIOController(ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER.valueAsInt(), false);
+			speakerPowerSwitch = new GPIOController(ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER.valueAsInt(),
+					false);
 			speakerPowerSwitch.setIO(false, 0);
-		}
-	}
-
-	// public static void main(String[] args) throws InterruptedException {
-	// AudioPlayer ap = new AudioPlayer(new Processor(true));
-	// ap.start();
-	// }
-
-	public void start() {
-
-		if (!processor.isDevelopmentMode()) {
-			speakerPowerSwitch.setIO(true, ApplicationProperties.SPEAKER_POWER_ON_DELAY_MILLIES.valueAsInt());
 		}
 
 		String home = System.getProperty("user.home");
@@ -70,15 +62,27 @@ public class AudioPlayer {
 			}
 		}
 		Collections.shuffle(files);
+	}
 
-		streamingThread = new AudioStreamingThread(mixerInfo, files, targetVolume);
+	// public static void main(String[] args) throws InterruptedException {
+	// AudioPlayer ap = new AudioPlayer(new Processor(true));
+	// ap.start();
+	// }
+
+	public void start() {
+
+		if (!processor.isDevelopmentMode()) {
+			speakerPowerSwitch.setIO(true, ApplicationProperties.SPEAKER_POWER_ON_DELAY_MILLIES.valueAsInt());
+		}
+
+		streamingThread = new AudioStreamingThread(mixerInfo, files, targetVolume, fileIndex);
 		streamingThread.start();
 		playing = true;
 	}
 
 	public void stop() {
 		if (streamingThread != null && streamingThread.isAlive()) {
-			streamingThread.stopStreaming();
+			fileIndex = streamingThread.stopStreaming();
 		}
 
 		if (!processor.isDevelopmentMode()) {

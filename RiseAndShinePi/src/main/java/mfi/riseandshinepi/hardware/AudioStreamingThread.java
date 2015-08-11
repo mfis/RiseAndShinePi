@@ -1,7 +1,6 @@
 package mfi.riseandshinepi.hardware;
 
 import java.io.File;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.sound.sampled.AudioFormat;
@@ -15,6 +14,8 @@ public class AudioStreamingThread extends Thread {
 
 	private Info mixerInfo;
 	private List<File> files;
+	private int startFileIndex;
+	private int actualFileIndex;
 
 	private AudioInputStream encodedInput;
 	private AudioInputStream decodedInput;
@@ -30,22 +31,33 @@ public class AudioStreamingThread extends Thread {
 	private boolean continuePlaying;
 	private boolean runningStream;
 
-	public AudioStreamingThread(Info mixerInfo, List<File> files, Integer targetVolume) {
+	public AudioStreamingThread(Info mixerInfo, List<File> files, Integer targetVolume, int fileIndex) {
 		super();
 		this.mixerInfo = mixerInfo;
 		this.files = files;
 		this.continuePlaying = true;
 		this.runningStream = false;
 		this.targetVolume = targetVolume;
+		this.startFileIndex = fileIndex;
 	}
 
 	@Override
 	public void run() {
 
 		super.run();
-		Iterator<File> fileIterator = files.iterator();
-		while (fileIterator.hasNext() && continuePlaying) {
-			stream(fileIterator.next());
+		if (startFileIndex >= files.size()) {
+			startFileIndex = 0;
+		}
+		while (continuePlaying) {
+			for (int i = startFileIndex; i < files.size(); i++) {
+				if (continuePlaying) {
+					actualFileIndex = i;
+					stream(files.get(i));
+				}
+			}
+			if (continuePlaying) {
+				startFileIndex = 0;
+			}
 		}
 		stopStreaming();
 	}
@@ -54,8 +66,9 @@ public class AudioStreamingThread extends Thread {
 
 		try {
 			encodedInput = AudioSystem.getAudioInputStream(file);
-			decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, encodedInput.getFormat().getSampleRate(), 16, encodedInput.getFormat().getChannels(), encodedInput
-					.getFormat().getChannels() * 2, encodedInput.getFormat().getSampleRate(), false);
+			decodedFormat = new AudioFormat(AudioFormat.Encoding.PCM_SIGNED, encodedInput.getFormat().getSampleRate(),
+					16, encodedInput.getFormat().getChannels(), encodedInput.getFormat().getChannels() * 2,
+					encodedInput.getFormat().getSampleRate(), false);
 			decodedInput = AudioSystem.getAudioInputStream(decodedFormat, encodedInput);
 
 			sourceDataLine = AudioSystem.getSourceDataLine(decodedFormat, mixerInfo);
@@ -109,8 +122,9 @@ public class AudioStreamingThread extends Thread {
 		}
 	}
 
-	public void stopStreaming() {
+	public int stopStreaming() {
 		continuePlaying = false;
+		return ++actualFileIndex;
 	}
 
 	private void initVolume() {
