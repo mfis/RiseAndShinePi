@@ -18,6 +18,7 @@ import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 import mfi.riseandshinepi.gui.cardpanes.AbstractPane;
+import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
@@ -35,6 +36,7 @@ public class Gui extends JFrame {
 
 	private GraphicsDevice device;
 	private ClockPane clockPane;
+	private AlarmPane alarmPane;
 	private AlarmSettingsPane alarmSettingsPane;
 	private DisplayAutoOffSettingsPane displayAutoOffSettingsPane;
 	private BlankPane blankPane;
@@ -90,6 +92,7 @@ public class Gui extends JFrame {
 		switchButtonListener = new SwitchButtonListener(processor);
 
 		clockPane = new ClockPane(processor);
+		alarmPane = new AlarmPane(processor);
 		alarmSettingsPane = new AlarmSettingsPane(processor);
 		displayAutoOffSettingsPane = new DisplayAutoOffSettingsPane(processor);
 		blankPane = new BlankPane(processor);
@@ -97,6 +100,7 @@ public class Gui extends JFrame {
 		volumeAndBacklightSettingsPane = new VolumeAndBacklightSettingsPane(processor);
 
 		contentPane.add(clockPane, clockPane.getClass().getName());
+		contentPane.add(alarmPane, alarmPane.getClass().getName());
 		contentPane.add(alarmSettingsPane, alarmSettingsPane.getClass().getName());
 		contentPane.add(displayAutoOffSettingsPane, displayAutoOffSettingsPane.getClass().getName());
 		contentPane.add(blankPane, blankPane.getClass().getName());
@@ -117,7 +121,7 @@ public class Gui extends JFrame {
 		frame.pack();
 		frame.setVisible(true);
 
-		actualPane = ClockPane.class.getName();
+		actualPane = ClockPane.class.getName(); // FIXME
 	}
 
 	public void switchGuiTo(String name) {

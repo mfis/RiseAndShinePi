@@ -62,7 +62,8 @@ public class ClockPane extends AbstractPane implements ActionListener {
 		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
 		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
-		switchButton.setName(SettingsSummaryPane.class.getName());
+		 switchButton.setName(SettingsSummaryPane.class.getName()); // FIXME
+//		switchButton.setName(AlarmPane.class.getName()); // FIXME
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 

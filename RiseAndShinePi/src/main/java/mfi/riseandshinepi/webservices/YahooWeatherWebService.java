@@ -16,7 +16,7 @@ public class YahooWeatherWebService {
 
 	private final static int MIN_CALL_INTERVAL_MILLIES = 1000 * 60 * 5; // 5
 																		// Minutes
-	private final static String DEGREE = "\u00b0";
+	public final static String DEGREE = "\u00b0";
 
 	private final static String VAR_QUERY = "$$QUERY$$";
 	private final static String VAR_LOCATION = "$$LOCATION$$";
