@@ -223,6 +223,8 @@ public class Processor implements Constants {
 			}
 		}
 
+		ApplicationProperties.store();
+		
 		System.exit(0);
 	}
 

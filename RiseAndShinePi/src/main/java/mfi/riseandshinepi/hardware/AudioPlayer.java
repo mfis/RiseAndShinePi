@@ -45,11 +45,10 @@ public class AudioPlayer {
 			speakerPowerSwitch.setIO(false, 0);
 		}
 
+		setVolumePercent(ApplicationProperties.SPEAKER_VOLUME_PERCENT.valueAsInt());
+
 		String home = System.getProperty("user.home");
-		File dir = new File(home + ApplicationProperties.MUSIC_DIR_1_RELATIVE_TO_USER_HOME);
-		if (!dir.exists()) {
-			dir = new File(home + ApplicationProperties.MUSIC_DIR_2_RELATIVE_TO_USER_HOME);
-		}
+		File dir = new File(home + ApplicationProperties.MUSIC_DIR_RELATIVE_TO_USER_HOME);
 
 		files.clear();
 		File[] filesx = dir.listFiles();
@@ -102,6 +101,7 @@ public class AudioPlayer {
 			streamingThread.setVolume(percent);
 		}
 		targetVolume = percent;
+		ApplicationProperties.SPEAKER_VOLUME_PERCENT.setValue(percent + "");
 	}
 
 	public boolean isPlaying() {

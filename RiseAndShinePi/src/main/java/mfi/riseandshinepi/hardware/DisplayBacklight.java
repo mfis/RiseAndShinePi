@@ -19,7 +19,8 @@ public class DisplayBacklight {
 	public DisplayBacklight(Processor processor) {
 		this.processor = processor;
 		if (!this.processor.isDevelopmentMode()) {
-			backlightModulator = new GPIOController(ApplicationProperties.DISPLAY_BACKLIGHT_DIMMING_GPIO_PIN_NUMBER.valueAsInt(), true);
+			backlightModulator = new GPIOController(
+					ApplicationProperties.DISPLAY_BACKLIGHT_DIMMING_GPIO_PIN_NUMBER.valueAsInt(), true);
 		}
 	}
 
@@ -61,6 +62,7 @@ public class DisplayBacklight {
 
 	public void setDefaultValue(int defaultValue) {
 		this.defaultValue = defaultValue;
+		ApplicationProperties.DISPLAY_BACKLIGHT_DEFAULT_VALUE.setValue(defaultValue + "");
 	}
 
 }
