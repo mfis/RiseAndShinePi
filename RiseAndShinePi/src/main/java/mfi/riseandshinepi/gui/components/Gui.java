@@ -17,6 +17,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mfi.riseandshinepi.gui.cardpanes.AbstractPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
@@ -133,6 +135,18 @@ public class Gui extends JFrame {
 		}
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
 		actualPane = name;
+	}
+	
+	public void refreshGuiValues() {
+		if(StringUtils.isBlank(actualPane)){
+			return;
+		}
+		for (Component c : contentPane.getComponents()) {
+			if (c != null && c.getClass().getName().equals(actualPane) && c instanceof AbstractPane) {
+				((AbstractPane) c).refresh();
+				break;
+			}
+		}
 	}
 
 	public DevelopmentPanel getDevelopmentPanel() {

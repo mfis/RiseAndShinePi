@@ -6,21 +6,35 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import com.google.gson.GsonBuilder;
 
 public class YahooWeatherWebService {
 
-	private final static int MIN_CALL_INTERVAL_MILLIES = 1000 * 60 * 5; // 5
-																		// Minutes
 	public final static String DEGREE = "\u00b0";
 
 	private final static String VAR_QUERY = "$$QUERY$$";
 	private final static String VAR_LOCATION = "$$LOCATION$$";
 	private final static String VAR_TEMPERATURE_UNIT = "$$TEMPERATUREUNIT$$";
+
+	private final static SimpleDateFormat sdfActualWeather = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm a z",
+			Locale.ENGLISH);
+	private final static SimpleDateFormat sdfActualWeatherWithoutTimezone = new SimpleDateFormat(
+			"EEE, dd MMM yyyy hh:mm a", Locale.ENGLISH);
+
+	private final static SimpleDateFormat sdfForecastWeather = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
+	
+	private final static DecimalFormat decimalFormat = new DecimalFormat(" ");
 
 	private final static String YAHOO_WEATHER_FORECAST_URL = //
 	"https://query.yahooapis.com/v1/public/yql?q=" + VAR_QUERY
@@ -32,13 +46,14 @@ public class YahooWeatherWebService {
 
 	private final static Map<Integer, String> weatherConditionsEN = new LinkedHashMap<Integer, String>();
 	private final static Map<Integer, String> weatherConditionsDE = new LinkedHashMap<Integer, String>();
-	private final static Map<Language, Map<Integer, String>> weatherConditions = new LinkedHashMap<YahooWeatherWebService.Language, Map<Integer,String>>();
+	private final static Map<Language, Map<Integer, String>> weatherConditions = new LinkedHashMap<YahooWeatherWebService.Language, Map<Integer, String>>();
 
 	private String location;
 	private Language language;
 	private TemperatureUnit temperatureUnit;
-	private Date lastWeatherCall = null;
 	private Weather weather = null;
+	private int forecastIndex = 0;
+	private boolean dataAvailable = false;
 
 	public enum Language {
 		EN, DE;
@@ -64,25 +79,61 @@ public class YahooWeatherWebService {
 		weatherCall();
 	}
 
-	public static void main(String[] args) throws Exception {
-
-		YahooWeatherWebService instance = new YahooWeatherWebService("Hattingen, Gernany", Language.DE, TemperatureUnit.CELSIUS);
-		instance.weatherCall();
-
-		System.out.println(instance.getActualCondition() + ", " + instance.getActualTemperature());
-	}
+	// public static void main(String[] args) throws Exception {
+	//
+	// YahooWeatherWebService instance = new YahooWeatherWebService("Hattingen,
+	// Germany", Language.DE,
+	// TemperatureUnit.CELSIUS);
+	// instance.weatherCall();
+	//
+	// System.out.println(instance.getActualCondition() + ", " +
+	// instance.getActualTemperature());
+	// }
 
 	public void weatherCall() {
 
-		if (lastWeatherCall != null
-				&& System.currentTimeMillis() - lastWeatherCall.getTime() < MIN_CALL_INTERVAL_MILLIES) {
+		try {
+
+			String url = buildQueryURL(location);
+			String json = request(url);
+			weather = readJson(json, Weather.class);
+
+			lookupForecastIndex();
+
+		} catch (Exception e) {
+			System.out.println("weather call: " + e.toString());
+			dataAvailable = false;
 			return;
 		}
 
-		String url = buildQueryURL(location);
-		String json = request(url);
-		weather = readJson(json, Weather.class);
-		lastWeatherCall = new Date();
+		dataAvailable = true;
+	}
+
+	private void lookupForecastIndex() throws ParseException {
+
+		forecastIndex = -1;
+
+		Date actualWeatherDate;
+		try {
+			actualWeatherDate = sdfActualWeather.parse(weather.query.results.channel.item.condition.date);
+		} catch (ParseException pe) {
+			// for some locations (e.g. Antarctica), Yahoo returns strange
+			// timezone strings
+			actualWeatherDate = sdfActualWeatherWithoutTimezone
+					.parse(StringUtils.substringBeforeLast(weather.query.results.channel.item.condition.date, " "));
+		}
+
+		for (int i = 0; i < weather.query.results.channel.item.forecast.length; i++) {
+			Date forecastWeather = sdfForecastWeather.parse(weather.query.results.channel.item.forecast[i].date);
+			if (DateUtils.isSameDay(actualWeatherDate, forecastWeather)) {
+				forecastIndex = i;
+				break;
+			}
+		}
+
+		if (forecastIndex == -1) {
+			throw new IllegalArgumentException("No forecast index found");
+		}
 	}
 
 	private String buildQueryURL(String location) {
@@ -130,13 +181,61 @@ public class YahooWeatherWebService {
 	}
 
 	public String getActualTemperature() {
-		return weather.query.results.channel.item.condition.temp + DEGREE + weather.query.results.channel.units.temperature;
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return decimalFormat.format(weather.query.results.channel.item.condition.temp).trim() + DEGREE
+				+ weather.query.results.channel.units.temperature;
 	}
 
 	public String getActualCondition() {
+		if (!isDataAvailable()) {
+			return "";
+		}
 		return weatherConditions.get(language).get(weather.query.results.channel.item.condition.code);
 	}
+
+	public String getTodayMinTemperature() {
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return decimalFormat.format(weather.query.results.channel.item.forecast[forecastIndex].low).trim() + DEGREE
+				+ weather.query.results.channel.units.temperature;
+	}
+
+	public String getTodayMaxTemperature() {
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return decimalFormat.format(weather.query.results.channel.item.forecast[forecastIndex].high).trim() + DEGREE
+				+ weather.query.results.channel.units.temperature;
+	}
+
+	public String getTodayCondition() {
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return weatherConditions.get(language).get(weather.query.results.channel.item.forecast[forecastIndex].code);
+	}
+
+	public String getWeatherLocation() {
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return weather.query.results.channel.location.city + ", " + weather.query.results.channel.location.country;
+	}
 	
+	public String getProvider(){
+		if (!isDataAvailable()) {
+			return "";
+		}
+		return "Yahoo! Weather";
+	}
+	
+	public boolean isDataAvailable() {
+		return dataAvailable;
+	}
+
 	static {
 		// english
 		weatherConditionsEN.put(0, "tornado");
@@ -238,7 +337,7 @@ public class YahooWeatherWebService {
 		weatherConditionsDE.put(46, "Schneeschauer");
 		weatherConditionsDE.put(47, "Vereinzelt Sturm");
 		weatherConditionsDE.put(3200, "");
-		
+
 		weatherConditions.put(Language.EN, weatherConditionsEN);
 		weatherConditions.put(Language.DE, weatherConditionsDE);
 	}
@@ -260,6 +359,15 @@ public class YahooWeatherWebService {
 
 					private String title; // 'Yahoo! Weather - LOCATION'
 
+					private Location location;
+
+					private class Location {
+
+						private String city; // 'Hattingen'
+						
+						private String country; // 'Germany'
+					}
+					
 					private Units units;
 
 					private class Units {
@@ -277,12 +385,24 @@ public class YahooWeatherWebService {
 
 							private int code; // Weather condition code, see Map
 							private int temp; // actual temperature
+							private String date; // Sun, 16 Aug 2015 11:00 am
+													// CEST
 						}
 
+						private Forecast forecast[];
+
+						private class Forecast {
+
+							private int code; // Weather condition code, see Map
+							private String date; // 16 Aug 2015
+							private int low; // min temperature
+							private int high; // max temperature
+						}
 					}
 
 				};
 			};
 		};
 	}
+
 }

@@ -7,6 +7,7 @@ import java.util.Properties;
 
 public enum ApplicationProperties {
 
+	LANGUAGE, //
 	BULB_POWER_ON_DELAY_MILLIES, //
 	BULB_POWER_GPIO_PIN_NUMBER, //
 	SPEAKER_POWER_ON_DELAY_MILLIES, //
@@ -17,6 +18,8 @@ public enum ApplicationProperties {
 	MUSIC_DIR_2_RELATIVE_TO_USER_HOME, //
 	DISPLAY_ON_X_HOURS_BEFORE_ALARM, //
 	DISPLAY_OFF_X_MINUTES_IN_INACTIVITY, //
+	WEATHER_SERVICE_LOCATION, //
+	WEATHER_SERVICE_UNIT, //
 	; //
 
 	private String value = null;

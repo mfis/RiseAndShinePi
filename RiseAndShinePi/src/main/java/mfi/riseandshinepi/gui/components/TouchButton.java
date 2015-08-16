@@ -23,7 +23,7 @@ public class TouchButton extends JButton {
 
 	private void init() {
 		this.setBorderPainted(false);
-		this.setBackground(Color.GRAY);
+		this.setBackground(Color.DARK_GRAY);
 		this.setForeground(Color.WHITE);
 		this.setFont(font);
 		this.setFocusable(false);

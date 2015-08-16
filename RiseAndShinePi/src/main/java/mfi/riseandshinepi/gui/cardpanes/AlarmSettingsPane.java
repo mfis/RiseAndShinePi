@@ -42,7 +42,6 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 			int y = (processor.getAlarms().size() * 42) + (i / 2 * 42) + 12;
 			settingButton[i].setBounds(x, y, 119, 40);
 			settingButton[i].setName(settingButtonName[i]);
-			settingButton[i].setForeground(Color.LIGHT_GRAY);
 			settingButton[i].addActionListener(this);
 			this.add(settingButton[i]);
 		}

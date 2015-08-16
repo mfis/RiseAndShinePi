@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
 
+import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
 import mfi.riseandshinepi.gui.components.Gui;
@@ -25,6 +26,9 @@ public class Processor implements Constants {
 	private int dayInYear = -1;
 	private Timer alarmTimer;
 	private DisplayOffController displayOffController;
+	private WeatherController weatherController;
+
+	private Timer weatherTimer;
 
 	private List<Alarm> alarms;
 	private Integer activeAlarm = null;
@@ -46,15 +50,20 @@ public class Processor implements Constants {
 		alarms.add(new Alarm(9, 0, false, false));
 		alarms.add(new Alarm(11, 30, false, true));
 		alarmTimer = new Timer();
+		weatherTimer = new Timer();
 	}
 
 	public void initialize() {
 		displayOffController = new DisplayOffController(this);
 		displayOffController.setLastActivity(System.currentTimeMillis());
+		weatherController = new WeatherController(this);
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
-		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003);
+		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003); // every sec
+		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60 * 20); // every
+																						// 20
+																						// min
 	}
 
 	private void initializeHardware() {
@@ -75,6 +84,8 @@ public class Processor implements Constants {
 		}
 
 		gui.switchGuiTo(name);
+
+		weatherController.refreshWeather();
 	}
 
 	public synchronized void calculateNextAlarm() {
@@ -124,7 +135,8 @@ public class Processor implements Constants {
 		}
 
 		// If alarm is on more than an hour, turn off
-		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
+		if (alarmNowOn
+				&& (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
 			alarmOff();
 			return;
 		}
@@ -157,18 +169,19 @@ public class Processor implements Constants {
 
 	private void alarmOn() {
 
-		switchGuiTo(ClockPane.class.getName());
-
-		nextAlarmString = "jetzt";
 		alarmNowOn = true;
 		turnOnBulb();
 		audioPlayer.start();
+
+		switchGuiTo(AlarmPane.class.getName());
 	}
 
 	public void alarmOff() {
 		alarmNowOn = false;
 		turnOffBulb();
-		audioPlayer.stop();
+		if (audioPlayer.isPlaying()) {
+			audioPlayer.stop();
+		}
 		if (alarms.get(activeAlarm).isOnce()) {
 			activeAlarm = null;
 		}
@@ -195,6 +208,9 @@ public class Processor implements Constants {
 
 		alarmTimer.cancel();
 		alarmTimer.purge();
+
+		weatherTimer.cancel();
+		weatherTimer.purge();
 
 		audioPlayer.stop();
 		turnOffBulb();
@@ -256,6 +272,14 @@ public class Processor implements Constants {
 
 	public AudioPlayer getAudioPlayer() {
 		return audioPlayer;
+	}
+
+	public WeatherController getWeatherController() {
+		return weatherController;
+	}
+
+	public Calendar getActualCalendar() {
+		return actualCalendar;
 	}
 
 }

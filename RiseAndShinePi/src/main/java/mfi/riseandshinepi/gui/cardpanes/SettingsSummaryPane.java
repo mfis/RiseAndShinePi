@@ -16,6 +16,7 @@ public class SettingsSummaryPane extends AbstractPane {
 	private TouchButton alarmSettingsButton;
 	private TouchButton volumeAndBacklightSettingsButton;
 	private TouchButton displayAutoOffSettingsButton;
+	private TouchButton weatherButton;
 	private TouchButton exitButton;
 	private TouchButton switchButton;
 
@@ -30,19 +31,25 @@ public class SettingsSummaryPane extends AbstractPane {
 		this.add(alarmSettingsButton);
 
 		volumeAndBacklightSettingsButton = new TouchButton("Lautstärke & Helligkeit");
-		volumeAndBacklightSettingsButton.setBounds(0, 60, 240, 40);
+		volumeAndBacklightSettingsButton.setBounds(0, 55, 240, 40);
 		volumeAndBacklightSettingsButton.addActionListener(processor.getGui().getSwitchButtonListener());
 		volumeAndBacklightSettingsButton.setName(VolumeAndBacklightSettingsPane.class.getName());
 		this.add(volumeAndBacklightSettingsButton);
 
 		displayAutoOffSettingsButton = new TouchButton("Energieeinstellungen");
-		displayAutoOffSettingsButton.setBounds(0, 120, 240, 40);
+		displayAutoOffSettingsButton.setBounds(0, 110, 240, 40);
 		displayAutoOffSettingsButton.addActionListener(processor.getGui().getSwitchButtonListener());
 		displayAutoOffSettingsButton.setName(DisplayAutoOffSettingsPane.class.getName());
 		this.add(displayAutoOffSettingsButton);
 
+		weatherButton = new TouchButton("Wetterinformation");
+		weatherButton.setBounds(0, 165, 240, 40);
+		weatherButton.addActionListener(processor.getGui().getSwitchButtonListener());
+		weatherButton.setName(AlarmPane.class.getName());
+		this.add(weatherButton);
+		
 		exitButton = new TouchButton("Ausschalten (halten)");
-		exitButton.setBounds(0, 180, 240, 40);
+		exitButton.setBounds(0, 220, 240, 40);
 		exitButton.addMouseListener(new ExitButtonMouseListener(processor));
 		exitButton.setName(DisplayAutoOffSettingsPane.class.getName());
 		exitButton.setBackground(Color.RED);

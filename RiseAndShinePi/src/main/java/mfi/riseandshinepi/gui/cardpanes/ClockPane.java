@@ -30,7 +30,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	private JLabel labelActualDate;
 	private JLabel labelNextAlarm;
 	private Processor processor;
-	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EE, d. MMM yyyy");
+	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d. MMMM");
 
 	public ClockPane(Processor processor) {
 
@@ -62,8 +62,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 		switchButton = new TouchButton("");
 		switchButton.setBounds(0, 240, 240, 80);
 		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
-		 switchButton.setName(SettingsSummaryPane.class.getName()); // FIXME
-//		switchButton.setName(AlarmPane.class.getName()); // FIXME
+		switchButton.setName(SettingsSummaryPane.class.getName());
 		switchButton.setBackground(Color.BLACK);
 		switchButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 

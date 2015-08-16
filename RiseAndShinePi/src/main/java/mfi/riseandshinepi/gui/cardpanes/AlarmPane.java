@@ -1,36 +1,32 @@
 package mfi.riseandshinepi.gui.cardpanes;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 
 import mfi.riseandshinepi.gui.components.AnalogClock;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.logic.Processor;
-import mfi.riseandshinepi.logic.Utils;
-import mfi.riseandshinepi.webservices.YahooWeatherWebService;
 
 public class AlarmPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	private final Timer timer = new Timer(1000, this);
-	private JLabel labelActualDate;
-	private JLabel labelNextAlarm;
-	private JLabel actDate;
-	private JLabel actTemp;
+	private final static SimpleDateFormat sdfActualDate = new SimpleDateFormat("dd.MM.");
+	private JLabel weatherTodayTemperature;
+	private JLabel weatherTodayCondition;
+	private JLabel weatherActualTemperature;
+	private JLabel actualDate;
+	private JLabel weatherInfo1;
+	private JLabel weatherInfo2;
 	private Processor processor;
 	private TouchButton musicOffButton;
 	private TouchButton alarmOffButton;
+	private TouchButton switchButton;
 
 	public AlarmPane(Processor processor) {
 
@@ -46,61 +42,118 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 		clock.setAutoType(false);
 		this.add(clock);
 
-		labelActualDate = new JLabel("", SwingConstants.CENTER);
-		labelActualDate.setForeground(Color.LIGHT_GRAY);
+		weatherTodayTemperature = new JLabel("", SwingConstants.CENTER);
+		weatherTodayTemperature.setForeground(Color.LIGHT_GRAY);
 		Font font = new Font("Arial", Font.BOLD, 16);
-		labelActualDate.setFont(font);
-		labelActualDate.setBounds(0, 150, 240, 30);
-		this.add(labelActualDate);
+		weatherTodayTemperature.setFont(font);
+		weatherTodayTemperature.setBounds(0, 150, 240, 30);
+		this.add(weatherTodayTemperature);
 
-		labelNextAlarm = new JLabel("", SwingConstants.CENTER);
-		labelNextAlarm.setBounds(0, 175, 240, 30);
-		labelNextAlarm.setForeground(Color.LIGHT_GRAY);
-		labelNextAlarm.setFont(font);
-		this.add(labelNextAlarm);
+		weatherTodayCondition = new JLabel("", SwingConstants.CENTER);
+		weatherTodayCondition.setBounds(0, 175, 240, 30);
+		weatherTodayCondition.setForeground(Color.LIGHT_GRAY);
+		weatherTodayCondition.setFont(font);
+		this.add(weatherTodayCondition);
 
-		actDate = new JLabel("24.10.", SwingConstants.LEFT);
-		actDate.setBounds(10, 0, 50, 30);
-		actDate.setForeground(Color.DARK_GRAY);
-		actDate.setFont(font);
-		this.add(actDate);
-		
-		actTemp = new JLabel("24" + YahooWeatherWebService.DEGREE + "C", SwingConstants.RIGHT);
-		actTemp.setBounds(180, 0, 50, 30);
-		actTemp.setForeground(Color.DARK_GRAY);
-		actTemp.setFont(font);
-		this.add(actTemp);
+		actualDate = new JLabel("", SwingConstants.LEFT);
+		actualDate.setBounds(10, 0, 50, 30);
+		actualDate.setForeground(Color.DARK_GRAY);
+		actualDate.setFont(font);
+		this.add(actualDate);
 
-		musicOffButton = new TouchButton("Musik ausschalten");
+		weatherActualTemperature = new JLabel("", SwingConstants.RIGHT);
+		weatherActualTemperature.setBounds(180, 0, 50, 30);
+		weatherActualTemperature.setForeground(Color.DARK_GRAY);
+		weatherActualTemperature.setFont(font);
+		this.add(weatherActualTemperature);
+
+		weatherInfo1 = new JLabel("", SwingConstants.CENTER);
+		weatherInfo1.setForeground(Color.LIGHT_GRAY);
+		weatherInfo1.setFont(font);
+		weatherInfo1.setBounds(0, 210, 240, 30);
+		this.add(weatherInfo1);
+
+		weatherInfo2 = new JLabel("", SwingConstants.CENTER);
+		weatherInfo2.setBounds(0, 235, 240, 30);
+		weatherInfo2.setForeground(Color.LIGHT_GRAY);
+		weatherInfo2.setFont(font);
+		this.add(weatherInfo2);
+
+		musicOffButton = new TouchButton("");
 		musicOffButton.setBounds(0, 220, 240, 40);
-		musicOffButton.addActionListener(processor.getGui().getSwitchButtonListener());
-		musicOffButton.setName(AlarmSettingsPane.class.getName());
-		musicOffButton.setBackground(Color.DARK_GRAY);
-		musicOffButton.setForeground(Color.LIGHT_GRAY);
+		musicOffButton.addActionListener(this);
+		musicOffButton.setName("music_on_off");
 		this.add(musicOffButton);
 
 		alarmOffButton = new TouchButton("Wecker ausschalten");
 		alarmOffButton.setBounds(0, 280, 240, 40);
-		alarmOffButton.addActionListener(processor.getGui().getSwitchButtonListener());
-		alarmOffButton.setName(AlarmSettingsPane.class.getName());
-		alarmOffButton.setBackground(Color.DARK_GRAY);
-		alarmOffButton.setForeground(Color.LIGHT_GRAY);
+		alarmOffButton.addActionListener(this);
+		alarmOffButton.setName("alarm_off");
 		this.add(alarmOffButton);
 
-		timer.start();
+		switchButton = new TouchButton("Uhr anzeigen");
+		switchButton.setBounds(0, 280, 240, 40);
+		switchButton.addActionListener(processor.getGui().getSwitchButtonListener());
+		switchButton.setName(ClockPane.class.getName());
+		this.add(switchButton);
+
 	}
 
 	@Override
 	public void refresh() {
 
-		labelActualDate.setText( "Heute 19" + YahooWeatherWebService.DEGREE + "C bis 23" + YahooWeatherWebService.DEGREE + "C");
-		labelNextAlarm.setText("Überwiegend sonnig");
+		actualDate.setText(sdfActualDate.format(processor.getActualCalendar().getTime()));
+		weatherActualTemperature.setText(processor.getWeatherController().getActualTemperature());
+		if (processor.getWeatherController().isDataAvailable()) {
+			weatherTodayTemperature.setText("Heute " + processor.getWeatherController().getTodayMinTemperature()
+					+ " bis " + processor.getWeatherController().getTodayMaxTemperature());
+		} else {
+			weatherTodayTemperature.setText("");
+		}
+		weatherTodayCondition.setText(processor.getWeatherController().getTodayCondition());
+
+		if (processor.isAlarmNowOn()) {
+			musicOffButton.setVisible(true);
+			alarmOffButton.setVisible(true);
+			switchButton.setVisible(false);
+			weatherInfo1.setVisible(false);
+			weatherInfo2.setVisible(false);
+			if (processor.getAudioPlayer().isPlaying()) {
+				musicOffButton.setText("Musik ausschalten");
+			} else {
+				musicOffButton.setText("Musik einschalten");
+			}
+		} else {
+			musicOffButton.setVisible(false);
+			alarmOffButton.setVisible(false);
+			switchButton.setVisible(true);
+			weatherInfo1.setVisible(true);
+			weatherInfo2.setVisible(true);
+			weatherInfo1.setText(processor.getWeatherController().getWeatherLocation());
+			weatherInfo2.setText(processor.getWeatherController().getProvider());
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		refresh();
 
+		String name = ((TouchButton) e.getSource()).getName();
+
+		switch (name) {
+		case "music_on_off":
+			if (processor.getAudioPlayer().isPlaying()) {
+				processor.getAudioPlayer().stop();
+			} else {
+				processor.getAudioPlayer().start();
+			}
+			break;
+		case "alarm_off":
+			processor.alarmOff();
+			processor.switchGuiTo(ClockPane.class.getName());
+			break;
+		}
+
+		refresh();
 	}
 
 }
