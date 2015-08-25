@@ -138,4 +138,8 @@ public class DisplayAutoOffSettingsPane extends AbstractPane implements ActionLi
 
 	}
 
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 }

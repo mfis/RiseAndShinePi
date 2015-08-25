@@ -61,9 +61,7 @@ public class Processor implements Constants {
 		gui.paintGui();
 		initializeHardware();
 		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003); // every sec
-		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60 * 20); // every
-																						// 20
-																						// min
+		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 9); // every 9 sec
 	}
 
 	private void initializeHardware() {
@@ -153,7 +151,7 @@ public class Processor implements Constants {
 
 	public void processDisplayAutoOff() {
 
-		if (gui.getActualPane().equals(BlankPane.class.getName())) {
+		if (gui.getActualPaneName().equals(BlankPane.class.getName())) {
 			if (displayOffController.autoOnNow(System.currentTimeMillis())) {
 				switchGuiTo(ClockPane.class.getName());
 			}

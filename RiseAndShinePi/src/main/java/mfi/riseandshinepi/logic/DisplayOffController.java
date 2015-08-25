@@ -67,11 +67,7 @@ public class DisplayOffController {
 		autoOffDueToInactivity = new Date(cal.getTimeInMillis());
 
 		if (processor.isDevelopmentMode()) {
-			System.out.println("---------------------------------------------");
-			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity);
-			System.out.println("autoOnDueToAlarmTime = " + autoOnDueToAlarmTime);
-			System.out.println("onFixHours = " + onFixHours.toString());
-			System.out.println("---------------------------------------------");
+			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity + " autoOnDueToAlarmTime = " + autoOnDueToAlarmTime + " onFixHours = " + onFixHours.toString());
 		}
 	}
 

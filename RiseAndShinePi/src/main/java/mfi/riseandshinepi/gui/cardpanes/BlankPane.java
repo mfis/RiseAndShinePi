@@ -55,5 +55,10 @@ public class BlankPane extends AbstractPane implements ActionListener {
 	public void refresh() {
 		// noop
 	}
+	
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 
 }

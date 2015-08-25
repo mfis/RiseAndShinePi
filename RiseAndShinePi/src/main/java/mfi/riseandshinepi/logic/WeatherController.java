@@ -7,11 +7,17 @@ import mfi.riseandshinepi.webservices.YahooWeatherWebService.TemperatureUnit;
 public class WeatherController {
 
 	private Processor processor;
+
+	private Object monitor = new Object();
 	
+	private long lastCall = 0;
+	
+	private YahooWeatherWebService weatherWebService;
+
 	public WeatherController(Processor processor) {
 
 		this.processor = processor;
-		
+
 		String location = ApplicationProperties.WEATHER_SERVICE_LOCATION.toString();
 		Language language = YahooWeatherWebService.Language.valueOf(ApplicationProperties.LANGUAGE.toString());
 		TemperatureUnit temperatureUnit = YahooWeatherWebService.TemperatureUnit
@@ -20,24 +26,32 @@ public class WeatherController {
 		weatherWebService = new YahooWeatherWebService(location, language, temperatureUnit);
 	}
 
-	private long lastCall = 0;
+	public synchronized void refreshWeather() {
 
-	private YahooWeatherWebService weatherWebService;
+		if (System.currentTimeMillis() - lastCall < 1000 * 60 * 15) {
+			return;
+		}
 
-	public void refreshWeather() {
+		if (!processor.getGui().isActualPaneShowingWeatherInformation()) {
+			return;
+		}
 
-		if (System.currentTimeMillis() - lastCall > 1000 * 60) {
-
-			new Thread(new Runnable() {
-				public void run() {
+		new Thread(new Runnable() {
+			public void run() {
+				synchronized (monitor) {
+					if(processor.isDevelopmentMode()){
+						System.out.println("CALLING WEATHER");
+					}
 					weatherWebService.weatherCall();
-					lastCall = System.currentTimeMillis();
+					if (weatherWebService.isDataAvailable()) {
+						lastCall = System.currentTimeMillis();
+					}
 					processor.getGui().refreshGuiValues();
 				}
-			}).start();
-		}
+			}
+		}).start();
 	}
-	
+
 	public String getActualTemperature() {
 		return weatherWebService.getActualTemperature();
 	}
@@ -57,15 +71,15 @@ public class WeatherController {
 	public String getTodayCondition() {
 		return weatherWebService.getTodayCondition();
 	}
-	
+
 	public String getWeatherLocation() {
 		return weatherWebService.getWeatherLocation();
 	}
 
-	public String getProvider(){
+	public String getProvider() {
 		return weatherWebService.getProvider();
 	}
-	
+
 	public boolean isDataAvailable() {
 		return weatherWebService.isDataAvailable();
 	}

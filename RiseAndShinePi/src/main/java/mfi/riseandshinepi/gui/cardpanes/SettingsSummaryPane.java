@@ -68,5 +68,9 @@ public class SettingsSummaryPane extends AbstractPane {
 	public void refresh() {
 		// noop
 	}
-
+	
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 }

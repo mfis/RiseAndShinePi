@@ -176,5 +176,10 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 		}
 
 	}
+	
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 
 }

@@ -76,7 +76,6 @@ public class YahooWeatherWebService {
 		this.location = location;
 		this.language = language;
 		this.temperatureUnit = temperatureUnit;
-		weatherCall();
 	}
 
 	// public static void main(String[] args) throws Exception {
@@ -93,7 +92,6 @@ public class YahooWeatherWebService {
 	public void weatherCall() {
 
 		try {
-
 			String url = buildQueryURL(location);
 			String json = request(url);
 			weather = readJson(json, Weather.class);

@@ -112,7 +112,10 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		refresh();
-
 	}
-
+	
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 }

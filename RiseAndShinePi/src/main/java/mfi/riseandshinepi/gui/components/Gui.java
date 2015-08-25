@@ -136,16 +136,32 @@ public class Gui extends JFrame {
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
 		actualPane = name;
 	}
-	
-	public void refreshGuiValues() {
+
+	public AbstractPane getActualPane() {
 		if(StringUtils.isBlank(actualPane)){
-			return;
+			return null;
 		}
 		for (Component c : contentPane.getComponents()) {
 			if (c != null && c.getClass().getName().equals(actualPane) && c instanceof AbstractPane) {
-				((AbstractPane) c).refresh();
-				break;
+				return ((AbstractPane) c);
 			}
+		}
+		return null;
+	}
+	
+	public void refreshGuiValues() {
+		AbstractPane pane = getActualPane();
+		if(pane!=null){
+			pane.refresh();
+		}
+	}
+	
+	public boolean isActualPaneShowingWeatherInformation() {
+		AbstractPane pane = getActualPane();
+		if(pane!=null){
+			return pane.showsWeatherInformation();
+		}else{
+			return false;
 		}
 	}
 
@@ -174,7 +190,7 @@ public class Gui extends JFrame {
 		return device;
 	}
 
-	public String getActualPane() {
+	public String getActualPaneName() {
 		return actualPane;
 	}
 

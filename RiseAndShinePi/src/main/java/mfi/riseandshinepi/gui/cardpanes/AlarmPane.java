@@ -156,4 +156,9 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 		refresh();
 	}
 
+	@Override
+	public boolean showsWeatherInformation() {
+		return true;
+	}
+
 }

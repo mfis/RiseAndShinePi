@@ -131,5 +131,10 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 			settingButton[i].setVisible(processor.getActiveAlarm() != null);
 		}
 	}
+	
+	@Override
+	public boolean showsWeatherInformation() {
+		return false;
+	}
 
 }
