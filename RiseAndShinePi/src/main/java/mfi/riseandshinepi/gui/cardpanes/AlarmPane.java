@@ -57,13 +57,13 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 
 		actualDate = new JLabel("", SwingConstants.LEFT);
 		actualDate.setBounds(10, 0, 60, 30);
-		actualDate.setForeground(Color.DARK_GRAY);
+		actualDate.setForeground(Color.LIGHT_GRAY);
 		actualDate.setFont(font);
 		this.add(actualDate);
 
 		weatherActualTemperature = new JLabel("", SwingConstants.RIGHT);
 		weatherActualTemperature.setBounds(170, 0, 60, 30);
-		weatherActualTemperature.setForeground(Color.DARK_GRAY);
+		weatherActualTemperature.setForeground(Color.LIGHT_GRAY);
 		weatherActualTemperature.setFont(font);
 		this.add(weatherActualTemperature);
 
