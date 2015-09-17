@@ -24,8 +24,6 @@ public class AudioStreamingThread extends Thread {
 
 	private FloatControl volumeControl;
 	private int actualVolumePercent;
-	private float baseVolume;
-	private int basePercent;
 	private Integer targetVolume;
 
 	private boolean continuePlaying;
@@ -76,7 +74,6 @@ public class AudioStreamingThread extends Thread {
 
 			volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
 
-			initVolume();
 			setVolume(0);
 			sourceDataLine.start();
 
@@ -91,12 +88,7 @@ public class AudioStreamingThread extends Thread {
 					sourceDataLine.write(data, 0, bytesRead);
 				}
 				if (firstLoop) {
-					if (targetVolume != null) {
-						setVolume(targetVolume);
-						targetVolume = null;
-					} else {
-						setBaseVolume();
-					}
+					setVolume(targetVolume);
 					firstLoop = false;
 				}
 			}
@@ -127,29 +119,6 @@ public class AudioStreamingThread extends Thread {
 		return ++actualFileIndex;
 	}
 
-	private void initVolume() {
-
-		// System.out.println("init Min=" + volumeControl.getMinimum());
-		// System.out.println("init Max=" + volumeControl.getMaximum());
-		// System.out.println("init Act=" + volumeControl.getValue());
-
-		float min = volumeControl.getMinimum();
-		float max = volumeControl.getMaximum();
-		float range = max - min;
-
-		float percent = (volumeControl.getValue() - volumeControl.getMinimum()) / range * 100;
-		actualVolumePercent = (int) percent;
-
-		baseVolume = volumeControl.getValue();
-		basePercent = actualVolumePercent;
-	}
-
-	private void setBaseVolume() {
-
-		volumeControl.setValue(baseVolume);
-		actualVolumePercent = basePercent;
-	}
-
 	public void setVolume(int percent) {
 
 		float min = volumeControl.getMinimum();
@@ -167,7 +136,7 @@ public class AudioStreamingThread extends Thread {
 			value = max;
 		}
 
-		// System.out.println("NEW=" + value);
+		// System.out.println("VOLUME NEW=" + percent + " / " + value);
 		volumeControl.setValue(value);
 		actualVolumePercent = percent;
 	}
