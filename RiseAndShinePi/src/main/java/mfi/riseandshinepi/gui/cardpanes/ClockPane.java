@@ -30,7 +30,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	private JLabel labelActualDate;
 	private JLabel labelNextAlarm;
 	private Processor processor;
-	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d. MMMM");
+	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d. M.");
 
 	public ClockPane(Processor processor) {
 
