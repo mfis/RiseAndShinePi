@@ -37,9 +37,6 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 		clock.setName("clock");
 		clock.setPreferredSize(new java.awt.Dimension(140, 140));
 		clock.setBounds(50, 5, 140, 140);
-		clock.setType(AnalogClock.TYPE.DARK);
-		clock.setSecondPointerVisible(false);
-		clock.setAutoType(false);
 		this.add(clock);
 
 		weatherTodayTemperature = new JLabel("", SwingConstants.CENTER);

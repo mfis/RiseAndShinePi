@@ -40,9 +40,6 @@ public class ClockPane extends AbstractPane implements ActionListener {
 		clock.setName("clock");
 		clock.setPreferredSize(new java.awt.Dimension(240, 240));
 		clock.setBounds(0, 0, 240, 240);
-		clock.setType(AnalogClock.TYPE.DARK);
-		clock.setSecondPointerVisible(false);
-		clock.setAutoType(false);
 
 		JPanel clockPanel = new JPanel();
 		clockPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
