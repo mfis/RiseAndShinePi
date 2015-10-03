@@ -41,7 +41,7 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 
 		weatherTodayTemperature = new JLabel("", SwingConstants.CENTER);
 		weatherTodayTemperature.setForeground(Color.LIGHT_GRAY);
-		Font font = new Font("Arial", Font.BOLD, 16);
+		Font font = new Font("Arial", Font.BOLD, 18);
 		weatherTodayTemperature.setFont(font);
 		weatherTodayTemperature.setBounds(0, 150, 240, 30);
 		this.add(weatherTodayTemperature);

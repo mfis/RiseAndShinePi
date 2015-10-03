@@ -30,7 +30,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	private JLabel labelActualDate;
 	private JLabel labelNextAlarm;
 	private Processor processor;
-	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d. M.");
+	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d.M.");
 
 	public ClockPane(Processor processor) {
 
@@ -72,7 +72,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 
 		labelActualDate = new JLabel("", SwingConstants.CENTER);
 		labelActualDate.setForeground(Color.LIGHT_GRAY);
-		Font font = new Font("Arial", Font.BOLD, 16);
+		Font font = new Font("Arial", Font.BOLD, 18);
 		labelActualDate.setFont(font);
 		labelActualDate.setBounds(0, 10, 240, 30);
 		p.add(labelActualDate);
