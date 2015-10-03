@@ -16,7 +16,7 @@ import mfi.riseandshinepi.logic.Processor;
 public class AlarmPane extends AbstractPane implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
-	private final static SimpleDateFormat sdfActualDate = new SimpleDateFormat("dd.MM.");
+	private final static SimpleDateFormat sdfActualDate = new SimpleDateFormat("d.M.");
 	private JLabel weatherTodayTemperature;
 	private JLabel weatherTodayCondition;
 	private JLabel weatherActualTemperature;
