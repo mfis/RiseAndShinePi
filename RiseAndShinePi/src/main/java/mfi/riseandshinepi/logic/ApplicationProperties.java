@@ -88,10 +88,10 @@ public enum ApplicationProperties {
 		return Integer.parseInt(string);
 	}
 
-	public void setValue(String value){
+	public void setValue(String value) {
 		this.value = value;
 	}
-	
+
 	public static void store() {
 
 		try {
@@ -108,6 +108,8 @@ public enum ApplicationProperties {
 				userProperties.setProperty(e.name(), e.toString());
 			}
 			userProperties.store(fos, "");
+			fos.flush();
+			fos.close();
 
 		} catch (Exception e) {
 			throw new IllegalStateException("application.properties/user.properties could not be written ", e);

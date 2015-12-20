@@ -6,7 +6,7 @@ import java.awt.Color;
  * Based on the Clock Component by 'hansolo' Gerrit Grunwald ; Twitter @hansolo_
  */
 public class AnalogClock extends javax.swing.JComponent implements java.awt.event.ActionListener {
-	
+
 	private static final long serialVersionUID = 1L;
 
 	private final double ANGLE_STEP = 6;
@@ -17,6 +17,7 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	private java.awt.geom.Rectangle2D minutePointer;
 	private java.awt.geom.Ellipse2D centerKnob;
 	private java.awt.geom.Rectangle2D smallTick;
+	private java.awt.geom.Rectangle2D mediumTick;
 	private java.awt.geom.Rectangle2D bigTick;
 	private final java.awt.Color SHADOW_COLOR = new java.awt.Color(0.0f, 0.0f, 0.0f, 0.65f);
 
@@ -46,45 +47,36 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 		// Hour pointer
 		final double HOUR_POINTER_WIDTH = getWidth() * 0.0545454545;
 		final double HOUR_POINTER_HEIGHT = getWidth() * 0.3090909091;
-		this.hourPointer = new java.awt.geom.Rectangle2D.Double(center.getX() - (HOUR_POINTER_WIDTH / 2),
-				(getWidth() * 0.1909090909), HOUR_POINTER_WIDTH, HOUR_POINTER_HEIGHT);
+		this.hourPointer = new java.awt.geom.Rectangle2D.Double(center.getX() - (HOUR_POINTER_WIDTH / 2), (getWidth() * 0.1909090909), HOUR_POINTER_WIDTH,
+				HOUR_POINTER_HEIGHT);
 
 		// Minute pointer
 		final double MINUTE_POINTER_WIDTH = getWidth() * 0.0454545455;
 		final double MINUTE_POINTER_HEIGHT = getWidth() * 0.4363636364;
-		this.minutePointer = new java.awt.geom.Rectangle2D.Double(center.getX() - (MINUTE_POINTER_WIDTH / 2),
-				(getWidth() * 0.0636363636), MINUTE_POINTER_WIDTH, MINUTE_POINTER_HEIGHT);
-
-		// Second pointer
-		final java.awt.geom.GeneralPath SECOND_AREA = new java.awt.geom.GeneralPath();
-		SECOND_AREA.moveTo(getWidth() * 0.4863636364, center.getY());
-		SECOND_AREA.lineTo(getWidth() * 0.5136363636, center.getY());
-		SECOND_AREA.lineTo(getWidth() * 0.5045454545, getWidth() * 0.0363636364);
-		SECOND_AREA.lineTo(getWidth() * 0.4954545455, getWidth() * 0.0363636364);
-		SECOND_AREA.closePath();
-		java.awt.geom.Area second = new java.awt.geom.Area(SECOND_AREA);
-		second.add(new java.awt.geom.Area(new java.awt.geom.Ellipse2D.Double(getWidth() * 0.4545454545,
-				getWidth() * 0.1454545455, getWidth() * 0.0909090909, getWidth() * 0.0909090909)));
-		second.subtract(new java.awt.geom.Area(new java.awt.geom.Ellipse2D.Double(getWidth() * 0.4636363636,
-				getWidth() * 0.1545454545, getWidth() * 0.0727272727, getWidth() * 0.0727272727)));
+		this.minutePointer = new java.awt.geom.Rectangle2D.Double(center.getX() - (MINUTE_POINTER_WIDTH / 2), (getWidth() * 0.0636363636), MINUTE_POINTER_WIDTH,
+				MINUTE_POINTER_HEIGHT);
 
 		// Center knob
 		final double CENTER_KNOB_DIAMETER = getWidth() * 0.090909;
-		this.centerKnob = new java.awt.geom.Ellipse2D.Double(center.getX() - CENTER_KNOB_DIAMETER / 2,
-				center.getY() - CENTER_KNOB_DIAMETER / 2, CENTER_KNOB_DIAMETER, CENTER_KNOB_DIAMETER);
+		this.centerKnob = new java.awt.geom.Ellipse2D.Double(center.getX() - CENTER_KNOB_DIAMETER / 2, center.getY() - CENTER_KNOB_DIAMETER / 2,
+				CENTER_KNOB_DIAMETER, CENTER_KNOB_DIAMETER);
 
 		// Minute tick mark
 		final double SMALL_TICK_WIDTH = getWidth() * 0.0181818;
 		final double SMALL_TICK_HEIGHT = getWidth() * 0.0363636;
-		this.smallTick = new java.awt.geom.Rectangle2D.Double(center.getX() - (SMALL_TICK_WIDTH / 2), SMALL_TICK_HEIGHT,
-				SMALL_TICK_WIDTH, SMALL_TICK_HEIGHT);
+		this.smallTick = new java.awt.geom.Rectangle2D.Double(center.getX() - (SMALL_TICK_WIDTH / 2), SMALL_TICK_HEIGHT, SMALL_TICK_WIDTH, SMALL_TICK_HEIGHT);
 		this.currentMinuteTickmarkColor = Color.GRAY;
 
-		// Hour tick mark
+		// Hour tick mark medium
+		final double MEDIUM_TICK_WIDTH = getWidth() * 0.0181818;
+		final double MEDIUM_TICK_HEIGHT = getWidth() * 0.06909090;
+		this.mediumTick = new java.awt.geom.Rectangle2D.Double(center.getX() - (MEDIUM_TICK_WIDTH / 2), SMALL_TICK_HEIGHT, MEDIUM_TICK_WIDTH,
+				MEDIUM_TICK_HEIGHT);
+
+		// Hour tick mark big
 		final double BIG_TICK_WIDTH = getWidth() * 0.0363636;
 		final double BIG_TICK_HEIGHT = getWidth() * 0.10909090;
-		this.bigTick = new java.awt.geom.Rectangle2D.Double(center.getX() - (BIG_TICK_WIDTH / 2), SMALL_TICK_HEIGHT,
-				BIG_TICK_WIDTH, BIG_TICK_HEIGHT);
+		this.bigTick = new java.awt.geom.Rectangle2D.Double(center.getX() - (BIG_TICK_WIDTH / 2), SMALL_TICK_HEIGHT, BIG_TICK_WIDTH, BIG_TICK_HEIGHT);
 
 		this.currentForegroundColor = java.awt.Color.WHITE;
 		repaint(0, 0, getWidth(), getHeight());
@@ -95,10 +87,8 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 		java.awt.Graphics2D g2 = (java.awt.Graphics2D) g;
 
 		g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION,
-				java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
-		g2.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING,
-				java.awt.RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+		g2.setRenderingHint(java.awt.RenderingHints.KEY_ALPHA_INTERPOLATION, java.awt.RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+		g2.setRenderingHint(java.awt.RenderingHints.KEY_COLOR_RENDERING, java.awt.RenderingHints.VALUE_COLOR_RENDER_QUALITY);
 		g2.setRenderingHint(java.awt.RenderingHints.KEY_STROKE_CONTROL, java.awt.RenderingHints.VALUE_STROKE_PURE);
 
 		java.awt.geom.AffineTransform oldTransform = g2.getTransform();
@@ -114,8 +104,7 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 		// Draw minute pointer
 		g2.setTransform(oldTransform);
 		g2.setColor(SHADOW_COLOR);
-		g2.rotate(Math.toRadians(minutePointerAngle + (1 * Math.sin(Math.toRadians(minutePointerAngle)))),
-				center.getX(), center.getY());
+		g2.rotate(Math.toRadians(minutePointerAngle + (1 * Math.sin(Math.toRadians(minutePointerAngle)))), center.getX(), center.getY());
 		g2.fill(minutePointer);
 		g2.setTransform(oldTransform);
 
@@ -156,12 +145,16 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 			g2.fill(smallTick);
 		}
 
-		// Draw hours tickmarks
+		// Draw big and medium hours tickmarks
 		g2.setColor(currentForegroundColor);
 		for (int tickAngle = 0; tickAngle < 360; tickAngle += 30) {
 			g2.setTransform(oldTransform);
 			g2.rotate(Math.toRadians(tickAngle), center.getX(), center.getY());
-			g2.fill(bigTick);
+			if (tickAngle % 90 == 0) {
+				g2.fill(bigTick);
+			} else {
+				g2.fill(mediumTick);
+			}
 		}
 
 		g2.setTransform(oldTransform);
@@ -203,10 +196,10 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	@Override
 	public void actionPerformed(java.awt.event.ActionEvent event) {
 
-		if(!this.isVisible()){
+		if (!this.isVisible()) {
 			this.setVisible(true);
 		}
-		
+
 		if (event.getSource().equals(CLOCK_TIMER)) {
 
 			// Hours
