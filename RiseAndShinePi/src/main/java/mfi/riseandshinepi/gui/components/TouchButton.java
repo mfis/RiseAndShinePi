@@ -8,7 +8,8 @@ import javax.swing.JButton;
 public class TouchButton extends JButton {
 
 	private static final long serialVersionUID = 1L;
-	private Font font = new Font("Arial", Font.BOLD, 16);
+	private Font fontBold = new Font("Arial", Font.BOLD, 16);
+	private Font fontInactive = new Font("Arial", Font.ITALIC, 16);
 
 	public TouchButton() {
 		super();
@@ -24,18 +25,20 @@ public class TouchButton extends JButton {
 		this.setBorderPainted(false);
 		this.setBackground(Color.DARK_GRAY);
 		this.setForeground(Color.WHITE);
-		this.setFont(font);
+		this.setFont(fontBold);
 		this.setFocusable(false);
 		this.setMargin(new Insets(0, 0, 0, 0));
 		this.setBorder(null);
 	}
 
 	public void setInactiveLook() {
+		this.setFont(fontInactive);
 		this.setBackground(Color.GRAY);
 		this.setForeground(Color.BLACK);
 	}
 
 	public void setActiveLook() {
+		this.setFont(fontBold);
 		this.setBackground(Color.DARK_GRAY);
 		this.setForeground(Color.WHITE);
 	}
