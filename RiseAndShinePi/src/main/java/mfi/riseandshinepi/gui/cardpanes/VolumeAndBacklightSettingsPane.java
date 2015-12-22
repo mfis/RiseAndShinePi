@@ -3,9 +3,7 @@ package mfi.riseandshinepi.gui.cardpanes;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.Timer;
-
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.gui.components.TouchLabel;
 import mfi.riseandshinepi.hardware.DisplayBacklight;
@@ -18,7 +16,7 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 	private Processor processor;
 
 	private TouchLabel[] displayBacklightLabel;
-	private String[] displayBacklightLabelText = new String[] { "Display-Helligkeit", "##1 / " + DisplayBacklight.MAX_VALUE };
+	private String[] displayBacklightLabelText = new String[] { "Display-Helligkeit (nachts)", "##1 / " + DisplayBacklight.MAX_VALUE };
 	private TouchButton[] displayOnButton;
 	private String[] displayBacklightButtonText = new String[] { "heller", "dunkler" };
 	private String[] displayBlacklightButtonName = new String[] { "dispBL+", "dispBL-" };
@@ -166,8 +164,8 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 
 		for (int i = 0; i < volumeLabelText.length; i++) {
 			String text = volumeLabelText[i];
-			text = text.replace("##1", processor.getAudioPlayer().getActualVolumePercent() != null ? Integer.toString(processor.getAudioPlayer().getActualVolumePercent())
-					: "unbekannt");
+			text = text.replace("##1", processor.getAudioPlayer().getActualVolumePercent() != null
+					? Integer.toString(processor.getAudioPlayer().getActualVolumePercent()) : "unbekannt");
 			volumeLabel[i].setText(text);
 		}
 
@@ -176,7 +174,7 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 		}
 
 	}
-	
+
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;

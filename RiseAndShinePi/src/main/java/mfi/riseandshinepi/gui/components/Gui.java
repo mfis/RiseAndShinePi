@@ -11,14 +11,11 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
-
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
-
 import org.apache.commons.lang3.StringUtils;
-
 import mfi.riseandshinepi.gui.cardpanes.AbstractPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.AlarmSettingsPane;
@@ -123,7 +120,7 @@ public class Gui extends JFrame {
 		frame.pack();
 		frame.setVisible(true);
 
-		actualPane = ClockPane.class.getName(); // FIXME
+		actualPane = ClockPane.class.getName();
 	}
 
 	public void switchGuiTo(String name) {
@@ -138,7 +135,7 @@ public class Gui extends JFrame {
 	}
 
 	public AbstractPane getActualPane() {
-		if(StringUtils.isBlank(actualPane)){
+		if (StringUtils.isBlank(actualPane)) {
 			return null;
 		}
 		for (Component c : contentPane.getComponents()) {
@@ -148,19 +145,19 @@ public class Gui extends JFrame {
 		}
 		return null;
 	}
-	
+
 	public void refreshGuiValues() {
 		AbstractPane pane = getActualPane();
-		if(pane!=null){
+		if (pane != null) {
 			pane.refresh();
 		}
 	}
-	
+
 	public boolean isActualPaneShowingWeatherInformation() {
 		AbstractPane pane = getActualPane();
-		if(pane!=null){
+		if (pane != null) {
 			return pane.showsWeatherInformation();
-		}else{
+		} else {
 			return false;
 		}
 	}

@@ -24,6 +24,7 @@ public class Bulb {
 			switchToInHardware(newState);
 		}
 		state = newState;
+		processor.checkBacklightOffset();
 	}
 
 	private void switchToInSimulation(boolean state) {

@@ -5,10 +5,10 @@ import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Timer;
-
 import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
+import mfi.riseandshinepi.gui.cardpanes.VolumeAndBacklightSettingsPane;
 import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.hardware.AudioPlayer;
 import mfi.riseandshinepi.hardware.Bulb;
@@ -61,7 +61,8 @@ public class Processor implements Constants {
 		gui.paintGui();
 		initializeHardware();
 		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003); // every sec
-		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 9); // every 9 sec
+		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60); // every
+																				// min
 	}
 
 	private void initializeHardware() {
@@ -84,6 +85,7 @@ public class Processor implements Constants {
 		gui.switchGuiTo(name);
 
 		weatherController.refreshWeather();
+		checkBacklightOffset();
 	}
 
 	public synchronized void calculateNextAlarm() {
@@ -133,8 +135,7 @@ public class Processor implements Constants {
 		}
 
 		// If alarm is on more than an hour, turn off
-		if (alarmNowOn
-				&& (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
+		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
 			alarmOff();
 			return;
 		}
@@ -198,6 +199,12 @@ public class Processor implements Constants {
 		bulb.switchTo(!bulb.isState());
 	}
 
+	public void checkBacklightOffset() {
+		boolean offset = (bulb.isState() || weatherController.isDaylightTime())
+				&& !gui.getActualPaneName().equals(VolumeAndBacklightSettingsPane.class.getName());
+		displayBacklight.useOffset(offset);
+	}
+
 	public void exit() {
 
 		if (alarmNowOn) {
@@ -222,7 +229,7 @@ public class Processor implements Constants {
 		}
 
 		ApplicationProperties.store();
-		
+
 		System.exit(0);
 	}
 

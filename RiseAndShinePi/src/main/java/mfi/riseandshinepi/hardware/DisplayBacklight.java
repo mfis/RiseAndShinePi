@@ -1,7 +1,6 @@
 package mfi.riseandshinepi.hardware;
 
 import java.awt.Color;
-
 import mfi.riseandshinepi.logic.ApplicationProperties;
 import mfi.riseandshinepi.logic.Processor;
 
@@ -12,20 +11,27 @@ public class DisplayBacklight {
 
 	public final static int MIN_VALUE = 1;
 	public final static int MAX_VALUE = 20;
+	public final static int OFFSET = 4;
 
 	private int actualValue;
 	private int defaultValue = ApplicationProperties.DISPLAY_BACKLIGHT_DEFAULT_VALUE.valueAsInt();
+	private boolean useOffset = false;
 
 	public DisplayBacklight(Processor processor) {
 		this.processor = processor;
 		if (!this.processor.isDevelopmentMode()) {
-			backlightModulator = new GPIOController(
-					ApplicationProperties.DISPLAY_BACKLIGHT_DIMMING_GPIO_PIN_NUMBER.valueAsInt(), true);
+			backlightModulator = new GPIOController(ApplicationProperties.DISPLAY_BACKLIGHT_DIMMING_GPIO_PIN_NUMBER.valueAsInt(), true);
 		}
 	}
 
 	public void dimToValue(int value) {
+
 		actualValue = value;
+
+		if (useOffset && (value + OFFSET) <= MAX_VALUE) {
+			value = value + OFFSET;
+		}
+
 		if (processor.isDevelopmentMode()) {
 			dimToValueInSimulation(value);
 		} else {
@@ -58,6 +64,11 @@ public class DisplayBacklight {
 
 	public int getDefaultValue() {
 		return defaultValue;
+	}
+
+	public void useOffset(boolean flag) {
+		useOffset = flag;
+		dimToValue(actualValue);
 	}
 
 	public void setDefaultValue(int defaultValue) {

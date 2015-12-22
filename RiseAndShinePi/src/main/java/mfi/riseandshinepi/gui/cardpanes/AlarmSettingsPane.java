@@ -3,9 +3,7 @@ package mfi.riseandshinepi.gui.cardpanes;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
-
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
@@ -102,7 +100,8 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 				}
 				break;
 			case "interval":
-				processor.getAlarms().get(processor.getActiveAlarm()).setOnWeekdaysOnly(!processor.getAlarms().get(processor.getActiveAlarm()).isOnWeekdaysOnly());
+				processor.getAlarms().get(processor.getActiveAlarm())
+						.setOnWeekdaysOnly(!processor.getAlarms().get(processor.getActiveAlarm()).isOnWeekdaysOnly());
 				processor.getAlarms().get(processor.getActiveAlarm()).setOnce(false);
 				break;
 			case "once":
@@ -120,9 +119,9 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 		for (int i = 0; i < processor.getAlarms().size(); i++) {
 			if (processor.getActiveAlarm() != null && processor.getActiveAlarm() == i) {
-				alarmButton[i].setForeground(Color.WHITE);
+				alarmButton[i].setActiveLook();
 			} else {
-				alarmButton[i].setForeground(Color.BLACK);
+				alarmButton[i].setInactiveLook();
 			}
 			alarmButton[i].setText(processor.getAlarms().get(i).toString());
 		}
@@ -131,7 +130,7 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 			settingButton[i].setVisible(processor.getActiveAlarm() != null);
 		}
 	}
-	
+
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;

@@ -9,14 +9,14 @@ import java.net.URLEncoder;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
-
 import com.google.gson.GsonBuilder;
 
 public class YahooWeatherWebService {
@@ -27,26 +27,25 @@ public class YahooWeatherWebService {
 	private final static String VAR_LOCATION = "$$LOCATION$$";
 	private final static String VAR_TEMPERATURE_UNIT = "$$TEMPERATUREUNIT$$";
 
-	private final static SimpleDateFormat sdfActualWeather = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm a z",
-			Locale.ENGLISH);
-	private final static SimpleDateFormat sdfActualWeatherWithoutTimezone = new SimpleDateFormat(
-			"EEE, dd MMM yyyy hh:mm a", Locale.ENGLISH);
+	private final static SimpleDateFormat sdfActualWeather = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm a z", Locale.ENGLISH);
+	private final static SimpleDateFormat sdfActualWeatherWithoutTimezone = new SimpleDateFormat("EEE, dd MMM yyyy hh:mm a", Locale.ENGLISH);
 
 	private final static SimpleDateFormat sdfForecastWeather = new SimpleDateFormat("dd MMM yyyy", Locale.ENGLISH);
-	
+	private final DateTimeFormatter formatterSunriseSunset = DateTimeFormatter.ofPattern("h:m a");
 	private final static DecimalFormat decimalFormat = new DecimalFormat(" ");
 
 	private final static String YAHOO_WEATHER_FORECAST_URL = //
-	"https://query.yahooapis.com/v1/public/yql?q=" + VAR_QUERY
-			+ "&format=json&diagnostics=false&env=store://datatables.org/alltableswithkeys&callback=";
+	"https://query.yahooapis.com/v1/public/yql?q=" + VAR_QUERY + "&format=json&diagnostics=false&env=store://datatables.org/alltableswithkeys&callback=";
 
 	private final static String YAHOO_WEATHER_YQL_QUERY = //
-	"select * from weather.forecast where u='" + VAR_TEMPERATURE_UNIT
-			+ "' and woeid in (select woeid from geo.places(1) where text=\"" + VAR_LOCATION + "\")";
+	"select * from weather.forecast where u='" + VAR_TEMPERATURE_UNIT + "' and woeid in (select woeid from geo.places(1) where text=\"" + VAR_LOCATION + "\")";
 
 	private final static Map<Integer, String> weatherConditionsEN = new LinkedHashMap<Integer, String>();
 	private final static Map<Integer, String> weatherConditionsDE = new LinkedHashMap<Integer, String>();
 	private final static Map<Language, Map<Integer, String>> weatherConditions = new LinkedHashMap<YahooWeatherWebService.Language, Map<Integer, String>>();
+
+	private static LocalTime sunrise = null;
+	private static LocalTime sunset = null;
 
 	private String location;
 	private Language language;
@@ -78,16 +77,15 @@ public class YahooWeatherWebService {
 		this.temperatureUnit = temperatureUnit;
 	}
 
-	// public static void main(String[] args) throws Exception {
-	//
-	// YahooWeatherWebService instance = new YahooWeatherWebService("Hattingen,
-	// Germany", Language.DE,
-	// TemperatureUnit.CELSIUS);
-	// instance.weatherCall();
-	//
-	// System.out.println(instance.getActualCondition() + ", " +
-	// instance.getActualTemperature());
-	// }
+	public static void main(String[] args) throws Exception {
+
+		YahooWeatherWebService instance = new YahooWeatherWebService("Hattingen, Germany", Language.DE, TemperatureUnit.CELSIUS);
+		instance.weatherCall();
+
+		System.out.println(instance.getActualCondition() + ", " + instance.getActualTemperature());
+		System.out.println("sunrise: " + sunrise + "  /  sunset: " + sunset);
+
+	}
 
 	public void weatherCall() {
 
@@ -97,6 +95,8 @@ public class YahooWeatherWebService {
 			weather = readJson(json, Weather.class);
 
 			lookupForecastIndex();
+
+			parse();
 
 		} catch (Exception e) {
 			System.out.println("weather call: " + e.toString());
@@ -117,8 +117,7 @@ public class YahooWeatherWebService {
 		} catch (ParseException pe) {
 			// for some locations (e.g. Antarctica), Yahoo returns strange
 			// timezone strings
-			actualWeatherDate = sdfActualWeatherWithoutTimezone
-					.parse(StringUtils.substringBeforeLast(weather.query.results.channel.item.condition.date, " "));
+			actualWeatherDate = sdfActualWeatherWithoutTimezone.parse(StringUtils.substringBeforeLast(weather.query.results.channel.item.condition.date, " "));
 		}
 
 		for (int i = 0; i < weather.query.results.channel.item.forecast.length; i++) {
@@ -131,6 +130,16 @@ public class YahooWeatherWebService {
 
 		if (forecastIndex == -1) {
 			throw new IllegalArgumentException("No forecast index found");
+		}
+	}
+
+	private void parse() throws ParseException {
+		try {
+			sunrise = LocalTime.parse(weather.query.results.channel.astronomy.sunrise.toUpperCase(), formatterSunriseSunset);
+			sunset = LocalTime.parse(weather.query.results.channel.astronomy.sunset.toUpperCase(), formatterSunriseSunset);
+		} catch (NullPointerException npe) {
+			sunrise = null;
+			sunset = null;
 		}
 	}
 
@@ -182,8 +191,7 @@ public class YahooWeatherWebService {
 		if (!isDataAvailable()) {
 			return "";
 		}
-		return decimalFormat.format(weather.query.results.channel.item.condition.temp).trim() + DEGREE
-				+ weather.query.results.channel.units.temperature;
+		return decimalFormat.format(weather.query.results.channel.item.condition.temp).trim() + DEGREE + weather.query.results.channel.units.temperature;
 	}
 
 	public String getActualCondition() {
@@ -222,14 +230,22 @@ public class YahooWeatherWebService {
 		}
 		return weather.query.results.channel.location.city + ", " + weather.query.results.channel.location.country;
 	}
-	
-	public String getProvider(){
+
+	public LocalTime getSunrise() {
+		return sunrise;
+	}
+
+	public LocalTime getSunset() {
+		return sunset;
+	}
+
+	public String getProvider() {
 		if (!isDataAvailable()) {
 			return "";
 		}
 		return "Yahoo! Weather";
 	}
-	
+
 	public boolean isDataAvailable() {
 		return dataAvailable;
 	}
@@ -362,10 +378,10 @@ public class YahooWeatherWebService {
 					private class Location {
 
 						private String city; // 'Hattingen'
-						
+
 						private String country; // 'Germany'
 					}
-					
+
 					private Units units;
 
 					private class Units {
@@ -396,6 +412,15 @@ public class YahooWeatherWebService {
 							private int low; // min temperature
 							private int high; // max temperature
 						}
+					}
+
+					private Astronomy astronomy;
+
+					private class Astronomy {
+
+						private String sunrise; // 8:32 am
+
+						private String sunset; // "4:24 am
 					}
 
 				};

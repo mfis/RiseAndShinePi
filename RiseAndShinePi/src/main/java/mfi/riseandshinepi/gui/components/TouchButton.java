@@ -3,7 +3,6 @@ package mfi.riseandshinepi.gui.components;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Insets;
-
 import javax.swing.JButton;
 
 public class TouchButton extends JButton {
@@ -29,5 +28,15 @@ public class TouchButton extends JButton {
 		this.setFocusable(false);
 		this.setMargin(new Insets(0, 0, 0, 0));
 		this.setBorder(null);
+	}
+
+	public void setInactiveLook() {
+		this.setBackground(Color.GRAY);
+		this.setForeground(Color.BLACK);
+	}
+
+	public void setActiveLook() {
+		this.setBackground(Color.DARK_GRAY);
+		this.setForeground(Color.WHITE);
 	}
 }
