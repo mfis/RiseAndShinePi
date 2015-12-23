@@ -5,10 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Mixer.Info;
-
 import mfi.riseandshinepi.logic.ApplicationProperties;
 import mfi.riseandshinepi.logic.Processor;
 
@@ -40,8 +38,7 @@ public class AudioPlayer {
 		files = new LinkedList<File>();
 		mixerInfo = AudioSystem.getMixerInfo()[MIXER_INDEX];
 		if (!this.processor.isDevelopmentMode()) {
-			speakerPowerSwitch = new GPIOController(ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER.valueAsInt(),
-					false);
+			speakerPowerSwitch = new GPIOController(ApplicationProperties.SPEAKER_POWER_GPIO_PIN_NUMBER.valueAsInt(), false);
 			speakerPowerSwitch.setIO(false, 0);
 		}
 

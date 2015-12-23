@@ -11,7 +11,8 @@ public class WeatherController {
 
 	private Object monitor = new Object();
 
-	private long lastCall = 0;
+	private long lastDataAvailable = 0;
+	private long lastRequest = 0;
 
 	private YahooWeatherWebService weatherWebService;
 
@@ -26,16 +27,16 @@ public class WeatherController {
 		weatherWebService = new YahooWeatherWebService(location, language, temperatureUnit);
 	}
 
-	public synchronized void refreshWeather() {
+	public synchronized void refreshWeather(boolean forceRefresh) {
 
-		if ((System.currentTimeMillis() - lastCall) < 1000 * 60 * 15) {
+		if ((System.currentTimeMillis() - lastRequest) < 1000 * 31) {
 			return;
 		}
 
-		if (!processor.getGui().isActualPaneShowingWeatherInformation()) {
-			if ((System.currentTimeMillis() - lastCall) < 1000 * 60 * 360) {
-				return;
-			}
+		long refreshRate = (processor.getGui().isActualPaneShowingWeatherInformation() || forceRefresh) ? (1000 * 60 * 10) : (1000 * 60 * 120);
+
+		if ((System.currentTimeMillis() - lastDataAvailable) < refreshRate) {
+			return;
 		}
 
 		new Thread(new Runnable() {
@@ -45,12 +46,12 @@ public class WeatherController {
 					if (processor.isDevelopmentMode()) {
 						System.out.println("CALLING WEATHER");
 					}
+					lastRequest = System.currentTimeMillis();
 					weatherWebService.weatherCall();
 					if (weatherWebService.isDataAvailable()) {
-						lastCall = System.currentTimeMillis();
+						lastDataAvailable = System.currentTimeMillis();
 					}
 					processor.getGui().refreshGuiValues();
-					processor.checkBacklightOffset();
 				}
 			}
 		}).start();

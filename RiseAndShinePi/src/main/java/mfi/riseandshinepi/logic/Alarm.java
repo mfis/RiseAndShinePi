@@ -6,27 +6,43 @@ import java.util.GregorianCalendar;
 
 public class Alarm {
 
-	public Alarm(int hour, int minute, boolean onWeekdaysOnly, boolean once) {
+	public Alarm(int hour, int minute, boolean onWeekdaysOnly, boolean once, boolean snooze, boolean active) {
 		this.alarmHour = hour;
 		this.alarmMinute = minute;
 		this.onWeekdaysOnly = onWeekdaysOnly;
 		this.once = once;
+		this.snooze = snooze;
+		this.active = active;
 		alarmCalendar = new GregorianCalendar();
+		actualCalendar = new GregorianCalendar();
+		refreshCache();
 	}
 
 	private int alarmHour;
 	private int alarmMinute;
 	private boolean onWeekdaysOnly;
 	private boolean once;
+	private boolean snooze;
+	private Calendar actualCalendar;
 	private Calendar alarmCalendar;
 	private static SimpleDateFormat sdfHHmm = Utils.getSimpleDateFormat("HH:mm");;
 	private static SimpleDateFormat sdfEEHHmm = Utils.getSimpleDateFormat("EE, HH:mm");
+	private int dayInYear = -1;
+	private boolean active;
+	private boolean hasBeenTriggered = false;
+
+	private Calendar cachedNextAlarm;
+	private String cachedNextAlarmString;
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder(30);
 		if (once) {
-			sb.append("einmalig");
+			if (snooze) {
+				sb.append("schlummern");
+			} else {
+				sb.append("einmalig");
+			}
 		} else {
 			sb.append(onWeekdaysOnly ? "Mo - Fr" : "täglich");
 		}
@@ -40,7 +56,19 @@ public class Alarm {
 		return sb.toString();
 	}
 
-	public Calendar nextAlarmTime(long now) {
+	public void hasBeenTriggered() {
+
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar)) {
+			hasBeenTriggered = true;
+		}
+	}
+
+	private Calendar nextAlarmTime(long now) {
+
+		if (!active) {
+			return null;
+		}
 
 		alarmCalendar.setTimeInMillis(now);
 		long actHour = alarmCalendar.get(Calendar.HOUR_OF_DAY);
@@ -64,9 +92,14 @@ public class Alarm {
 		return alarmCalendar;
 	}
 
-	public static String nextAlarmTimeStringFor(Calendar alarmCalendar, Calendar actCalendar) {
+	private static String nextAlarmTimeStringFor(Calendar alarmCalendar, Calendar actCalendar) {
 
-		if (actCalendar.get(Calendar.YEAR) == alarmCalendar.get(Calendar.YEAR) && actCalendar.get(Calendar.DAY_OF_YEAR) == alarmCalendar.get(Calendar.DAY_OF_YEAR)) {
+		if (alarmCalendar == null) {
+			return null;
+		}
+
+		if (actCalendar.get(Calendar.YEAR) == alarmCalendar.get(Calendar.YEAR)
+				&& actCalendar.get(Calendar.DAY_OF_YEAR) == alarmCalendar.get(Calendar.DAY_OF_YEAR)) {
 			// today - no weekday
 			return sdfHHmm.format(alarmCalendar.getTime()) + " Uhr";
 		} else {
@@ -78,6 +111,53 @@ public class Alarm {
 	private void moveToNextDayAtAlarmTime(Calendar cal) {
 		cal.add(Calendar.DAY_OF_MONTH, 1);
 		moveToAlarmTime(cal);
+	}
+
+	private synchronized void refreshCache() {
+
+		if (!active) {
+			cachedNextAlarm = null;
+			cachedNextAlarmString = null;
+			hasBeenTriggered = false;
+			return;
+		}
+
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		cachedNextAlarm = nextAlarmTime(System.currentTimeMillis());
+		hasBeenTriggered = false;
+		cachedNextAlarmString = nextAlarmTimeStringFor(cachedNextAlarm, actualCalendar);
+
+		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
+		dayInYear = newDayInYear;
+	}
+
+	private void checkCache() {
+
+		if (cachedNextAlarm == null) {
+			refreshCache();
+			return;
+		}
+
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
+		if (newDayInYear != dayInYear) {
+			dayInYear = newDayInYear;
+			refreshCache();
+			return;
+		}
+
+		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar) && hasBeenTriggered) {
+			if (isOnce()) {
+				setActive(false);
+			}
+			refreshCache();
+			return;
+		}
+
+		if ((active && cachedNextAlarm == null) || !active && cachedNextAlarm != null) {
+			refreshCache();
+			return;
+		}
 	}
 
 	private void moveToAlarmTime(Calendar cal) {
@@ -93,6 +173,7 @@ public class Alarm {
 
 	public void setHour(int hour) {
 		this.alarmHour = hour;
+		refreshCache();
 	}
 
 	public int getMinute() {
@@ -101,6 +182,7 @@ public class Alarm {
 
 	public void setMinute(int minute) {
 		this.alarmMinute = minute;
+		refreshCache();
 	}
 
 	public boolean isOnWeekdaysOnly() {
@@ -109,6 +191,7 @@ public class Alarm {
 
 	public void setOnWeekdaysOnly(boolean onWeekdaysOnly) {
 		this.onWeekdaysOnly = onWeekdaysOnly;
+		refreshCache();
 	}
 
 	public boolean isOnce() {
@@ -117,6 +200,29 @@ public class Alarm {
 
 	public void setOnce(boolean once) {
 		this.once = once;
+		refreshCache();
+	}
+
+	public boolean isSnooze() {
+		return snooze;
+	}
+
+	public Calendar getCachedNextAlarm() {
+		checkCache();
+		return cachedNextAlarm;
+	}
+
+	public String getCachedNextAlarmString() {
+		checkCache();
+		return cachedNextAlarmString;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }

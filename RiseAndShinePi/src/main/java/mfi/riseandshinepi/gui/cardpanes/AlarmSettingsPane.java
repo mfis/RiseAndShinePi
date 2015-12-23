@@ -17,8 +17,10 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 	private TouchButton[] alarmButton;
 
 	private TouchButton[] settingButton;
-	String[] settingButtonText = new String[] { "+1 Stunde", "+1 Minute", "-1 Stunde", "-1 Minute", "Intervall", "Einmalig" };
-	String[] settingButtonName = new String[] { "+h", "+m", "-h", "-m", "interval", "once" };
+	String[] settingButtonText = new String[] { "-1 Std", "+1 Std", "-1 Min", "+1 Min", "Mo-Fr / tägl.", "einmalig" };
+	String[] settingButtonName = new String[] { "-h", "+h", "-m", "+m", "interval", "once" };
+
+	private int editIndex = 0;
 
 	public AlarmSettingsPane(Processor processor) {
 
@@ -59,17 +61,11 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 		String name = ((JButton) e.getSource()).getName();
 
 		if (Utils.isStringValueNumeric(name)) {
-			int index = Integer.parseInt(name);
-			Integer newAlarmIndex;
-			if (processor.getActiveAlarm() != null && index == processor.getActiveAlarm()) {
-				newAlarmIndex = null;
-			} else {
-				newAlarmIndex = index;
-			}
-			processor.setActiveAlarm(newAlarmIndex);
+			editIndex = Integer.parseInt(name);
+			processor.getAlarms().get(editIndex).setActive(!processor.getAlarms().get(editIndex).isActive());
 		} else {
-			int h = processor.getAlarms().get(processor.getActiveAlarm()).getHour();
-			int m = processor.getAlarms().get(processor.getActiveAlarm()).getMinute();
+			int h = processor.getAlarms().get(editIndex).getHour();
+			int m = processor.getAlarms().get(editIndex).getMinute();
 			switch (name) {
 			case "+h":
 				if (h == 23) {
@@ -100,16 +96,15 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 				}
 				break;
 			case "interval":
-				processor.getAlarms().get(processor.getActiveAlarm())
-						.setOnWeekdaysOnly(!processor.getAlarms().get(processor.getActiveAlarm()).isOnWeekdaysOnly());
-				processor.getAlarms().get(processor.getActiveAlarm()).setOnce(false);
+				processor.getAlarms().get(editIndex).setOnWeekdaysOnly(!processor.getAlarms().get(editIndex).isOnWeekdaysOnly());
+				processor.getAlarms().get(editIndex).setOnce(false);
 				break;
 			case "once":
-				processor.getAlarms().get(processor.getActiveAlarm()).setOnce(true);
+				processor.getAlarms().get(editIndex).setOnce(true);
 				break;
 			}
-			processor.getAlarms().get(processor.getActiveAlarm()).setHour(h);
-			processor.getAlarms().get(processor.getActiveAlarm()).setMinute(m);
+			processor.getAlarms().get(editIndex).setHour(h);
+			processor.getAlarms().get(editIndex).setMinute(m);
 		}
 		refresh();
 	}
@@ -118,17 +113,21 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 	public void refresh() {
 
 		for (int i = 0; i < processor.getAlarms().size(); i++) {
-			if (processor.getActiveAlarm() != null && processor.getActiveAlarm() == i) {
+			if (editIndex == i) {
+				alarmButton[i].setText("[ " + processor.getAlarms().get(i).toString() + " ]");
+			} else {
+				alarmButton[i].setText(processor.getAlarms().get(i).toString());
+			}
+			if (processor.getAlarms().get(i).isActive()) {
 				alarmButton[i].setActiveLook();
 			} else {
 				alarmButton[i].setInactiveLook();
 			}
-			alarmButton[i].setText(processor.getAlarms().get(i).toString());
 		}
 
-		for (int i = 0; i < settingButton.length; i++) {
-			settingButton[i].setVisible(processor.getActiveAlarm() != null);
-		}
+		settingButton[4].setVisible(!processor.getAlarms().get(editIndex).isSnooze());
+		settingButton[5].setVisible(!processor.getAlarms().get(editIndex).isSnooze());
+
 	}
 
 	@Override

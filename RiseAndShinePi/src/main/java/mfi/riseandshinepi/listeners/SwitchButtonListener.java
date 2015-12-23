@@ -2,9 +2,7 @@ package mfi.riseandshinepi.listeners;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.JButton;
-
 import mfi.riseandshinepi.logic.Processor;
 
 public class SwitchButtonListener implements ActionListener {
@@ -17,8 +15,7 @@ public class SwitchButtonListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		processor.setAlarmStateToDirty();
-		processor.getDisplayOffController().setLastActivity(System.currentTimeMillis());
+		processor.getDisplayOffController().newActivity();
 		processor.switchGuiTo(((JButton) e.getSource()).getName());
 	}
 

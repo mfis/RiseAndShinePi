@@ -3,7 +3,6 @@ package mfi.riseandshinepi.listeners;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.TimerTask;
-
 import mfi.riseandshinepi.logic.Processor;
 
 public abstract class AbstractLongClickMouseListener extends MouseAdapter {
@@ -56,8 +55,7 @@ public abstract class AbstractLongClickMouseListener extends MouseAdapter {
 	}
 
 	private void clickEvents() {
-		getProcessor().setAlarmStateToDirty();
-		getProcessor().getDisplayOffController().setLastActivity(System.currentTimeMillis());
+		getProcessor().getDisplayOffController().newActivity();
 	}
 
 	public abstract void shortClick();

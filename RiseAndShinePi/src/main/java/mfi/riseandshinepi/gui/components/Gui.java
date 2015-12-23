@@ -47,8 +47,9 @@ public class Gui extends JFrame {
 	private Processor processor;
 
 	private String actualPane;
-
 	private boolean fullscreen;
+
+	private String alarmTimeString;
 
 	public Gui(Processor processor) {
 		this.processor = processor;
@@ -189,6 +190,14 @@ public class Gui extends JFrame {
 
 	public String getActualPaneName() {
 		return actualPane;
+	}
+
+	public String getAlarmTimeString() {
+		return alarmTimeString;
+	}
+
+	public void setAlarmTimeString(String alarmTimeString) {
+		this.alarmTimeString = alarmTimeString;
 	}
 
 }

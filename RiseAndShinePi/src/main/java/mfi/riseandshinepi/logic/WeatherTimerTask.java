@@ -12,7 +12,8 @@ public class WeatherTimerTask extends TimerTask {
 
 	@Override
 	public void run() {
-		processor.getWeatherController().refreshWeather();
+		processor.getWeatherController().refreshWeather(false);
+		processor.checkBacklightOffset();
 	}
 
 }

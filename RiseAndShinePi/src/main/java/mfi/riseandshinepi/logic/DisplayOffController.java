@@ -10,7 +10,7 @@ public class DisplayOffController {
 
 	// external setters
 
-	private Date lastActivity;
+	private long lastActivity;
 
 	private int displayOnFixHour = 21; // TODO: UserProperties
 
@@ -30,13 +30,36 @@ public class DisplayOffController {
 
 	private Processor processor;
 
+	private long calculatedForLastActivity = 0;
+
+	private Long calculatedForNextAlarm = null;
+
 	public DisplayOffController(Processor processor) {
 		now = new Date();
 		this.processor = processor;
-		lastActivity = new Date();
+		lastActivity = System.currentTimeMillis();
 	}
 
-	public void calculate(Calendar nextAlarm, long nowInLong) {
+	public void calculate(Calendar nextAlarm) {
+
+		boolean changedLastActivity = calculatedForLastActivity != lastActivity;
+
+		boolean changedNextAlarm = false;
+		if (calculatedForNextAlarm == null && nextAlarm == null) {
+			changedNextAlarm = false;
+		} else if ((nextAlarm != null && calculatedForNextAlarm == null) || (nextAlarm == null && calculatedForNextAlarm != null)
+				|| (nextAlarm.getTimeInMillis() != calculatedForNextAlarm)) {
+			changedNextAlarm = true;
+		}
+
+		if (!changedLastActivity && !changedNextAlarm) {
+			return;
+		}
+
+		calculatedForLastActivity = lastActivity;
+		calculatedForNextAlarm = nextAlarm != null ? nextAlarm.getTimeInMillis() : null;
+
+		long nowInLong = System.currentTimeMillis();
 
 		now.setTime(nowInLong);
 
@@ -67,7 +90,8 @@ public class DisplayOffController {
 		autoOffDueToInactivity = new Date(cal.getTimeInMillis());
 
 		if (processor.isDevelopmentMode()) {
-			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity + " autoOnDueToAlarmTime = " + autoOnDueToAlarmTime + " onFixHours = " + onFixHours.toString());
+			System.out.println("autoOffDueToInactivity = " + autoOffDueToInactivity + " autoOnDueToAlarmTime = " + autoOnDueToAlarmTime + " onFixHours = "
+					+ onFixHours.toString());
 		}
 	}
 
@@ -86,8 +110,8 @@ public class DisplayOffController {
 		return onFixHours.contains(hour) || (autoOnDueToAlarmTime != null && now.after(autoOnDueToAlarmTime));
 	}
 
-	public void setLastActivity(long now) {
-		this.lastActivity.setTime(now);
+	public void newActivity() {
+		this.lastActivity = System.currentTimeMillis();
 	}
 
 	public int getDisplayOnFixHour() {

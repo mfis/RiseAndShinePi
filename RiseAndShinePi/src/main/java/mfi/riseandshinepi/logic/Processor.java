@@ -23,7 +23,6 @@ public class Processor implements Constants {
 	private AudioPlayer audioPlayer;
 
 	private Calendar actualCalendar;
-	private int dayInYear = -1;
 	private Timer alarmTimer;
 	private DisplayOffController displayOffController;
 	private WeatherController weatherController;
@@ -31,36 +30,37 @@ public class Processor implements Constants {
 	private Timer weatherTimer;
 
 	private List<Alarm> alarms;
-	private Integer activeAlarm = null;
-	private Calendar nextAlarm = null;
-	private String nextAlarmString = null;
 	private boolean alarmNowOn = false;
-	private boolean alarmStateDirty;
 
 	public Processor(boolean developmentMode) {
 		super();
 		ApplicationProperties.init();
 		actualCalendar = new GregorianCalendar();
-		alarmStateDirty = true;
 		this.developmentMode = developmentMode;
 		displayBacklight = new DisplayBacklight(this);
 		bulb = new Bulb(this);
 		alarms = new LinkedList<Alarm>();
-		alarms.add(new Alarm(5, 12, true, false));
-		alarms.add(new Alarm(9, 0, false, false));
-		alarms.add(new Alarm(11, 30, false, true));
+		alarms.add(new Alarm(5, 12, true, false, false, false)); // FIXME:
+																	// porperties
+		alarms.add(new Alarm(9, 0, false, false, false, false)); // FIXME:
+																	// porperties
+		alarms.add(new Alarm(11, 30, false, true, true, false)); // FIXME:
+																	// porperties
+		// (only
+		// time)
 		alarmTimer = new Timer();
 		weatherTimer = new Timer();
 	}
 
 	public void initialize() {
 		displayOffController = new DisplayOffController(this);
-		displayOffController.setLastActivity(System.currentTimeMillis());
+		displayOffController.newActivity();
 		weatherController = new WeatherController(this);
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
-		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 1003); // every sec
+		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 5003); // every 5
+																	// sec
 		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60); // every
 																				// min
 	}
@@ -82,52 +82,45 @@ public class Processor implements Constants {
 			displayBacklight.dimToValue(displayBacklight.getDefaultValue());
 		}
 
+		if (name.equals(ClockPane.class.getName())) {
+			calculateNextAlarm();
+		}
+
 		gui.switchGuiTo(name);
 
-		weatherController.refreshWeather();
+		weatherController.refreshWeather(true);
 		checkBacklightOffset();
 	}
 
-	public synchronized void calculateNextAlarm() {
+	public synchronized Alarm calculateNextAlarm() {
 
-		if (activeAlarm == null) {
-			nextAlarm = null;
-			nextAlarmString = null;
-			alarmStateDirty = false;
-			displayOffController.calculate(nextAlarm, System.currentTimeMillis());
-			return;
-		}
-
-		Alarm a = alarms.get(activeAlarm);
-		nextAlarm = a.nextAlarmTime(System.currentTimeMillis());
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
-		nextAlarmString = Alarm.nextAlarmTimeStringFor(nextAlarm, actualCalendar);
-		displayOffController.calculate(nextAlarm, System.currentTimeMillis());
-		alarmStateDirty = false;
-	}
-
-	public String nextAlarmTimeString() {
-
-		if (alarmStateDirty) {
-			calculateNextAlarm();
+		Alarm next = null;
+		for (Alarm a : alarms) {
+			Calendar aNextAlarm = a.getCachedNextAlarm();
+			if (aNextAlarm != null) {
+				if (next == null) {
+					next = a;
+				} else {
+					if (aNextAlarm.before(next.getCachedNextAlarm())) {
+						next = a;
+					}
+				}
+			}
 		}
-		return nextAlarmString;
+
+		displayOffController.calculate(next != null ? next.getCachedNextAlarm() : null);
+		gui.setAlarmTimeString(next != null ? next.getCachedNextAlarmString() : null);
+
+		return next;
 	}
 
 	public void processAlarmTimer() {
 
 		actualCalendar.setTimeInMillis(System.currentTimeMillis());
-		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
-		if (newDayInYear != dayInYear) {
-			alarmStateDirty = true;
-			dayInYear = newDayInYear;
-		}
+		Alarm next = calculateNextAlarm();
 
-		if (alarmStateDirty) {
-			calculateNextAlarm();
-		}
-
-		if (nextAlarm == null) {
+		if (next == null) {
 			if (alarmNowOn) {
 				alarmOff();
 			}
@@ -135,7 +128,7 @@ public class Processor implements Constants {
 		}
 
 		// If alarm is on more than an hour, turn off
-		if (alarmNowOn && (nextAlarm.getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
+		if (alarmNowOn && (next.getCachedNextAlarm().getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
 			alarmOff();
 			return;
 		}
@@ -144,8 +137,8 @@ public class Processor implements Constants {
 			return;
 		}
 
-		if (nextAlarm.before(actualCalendar)) {
-			alarmOn();
+		if (!next.getCachedNextAlarm().after(actualCalendar)) {
+			alarmOn(next);
 			return;
 		}
 	}
@@ -166,24 +159,39 @@ public class Processor implements Constants {
 
 	}
 
-	private void alarmOn() {
+	private void alarmOn(Alarm alarm) {
+
+		if (alarmNowOn) {
+			return;
+		}
 
 		alarmNowOn = true;
 		turnOnBulb();
 		audioPlayer.start();
+		alarm.hasBeenTriggered();
 
 		switchGuiTo(AlarmPane.class.getName());
 	}
 
 	public void alarmOff() {
+
 		alarmNowOn = false;
 		turnOffBulb();
 		if (audioPlayer.isPlaying()) {
 			audioPlayer.stop();
 		}
-		if (alarms.get(activeAlarm).isOnce()) {
-			activeAlarm = null;
+
+		// mark overtaken alarms as triggered
+		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		for (Alarm a : alarms) {
+			Calendar alarmCal = a.getCachedNextAlarm();
+			if (alarmCal != null) {
+				if (!alarmCal.after(actualCalendar)) {
+					a.hasBeenTriggered();
+				}
+			}
 		}
+
 		calculateNextAlarm();
 	}
 
@@ -233,10 +241,6 @@ public class Processor implements Constants {
 		System.exit(0);
 	}
 
-	public void setAlarmStateToDirty() {
-		alarmStateDirty = true;
-	}
-
 	public boolean isDevelopmentMode() {
 		return developmentMode;
 	}
@@ -255,14 +259,6 @@ public class Processor implements Constants {
 
 	public List<Alarm> getAlarms() {
 		return alarms;
-	}
-
-	public Integer getActiveAlarm() {
-		return activeAlarm;
-	}
-
-	public void setActiveAlarm(Integer activeAlarm) {
-		this.activeAlarm = activeAlarm;
 	}
 
 	public boolean isAlarmNowOn() {

@@ -7,14 +7,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
 import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
-
 import mfi.riseandshinepi.gui.components.AnalogClock;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.listeners.AnalogClockMouseListener;
@@ -26,7 +24,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	private static final long serialVersionUID = 1L;
 	private TouchButton clockButton;
 	private TouchButton switchButton;
-	private final Timer timer = new Timer(1000, this);
+	private final Timer timer = new Timer(2511, this);
 	private JLabel labelActualDate;
 	private JLabel labelNextAlarm;
 	private Processor processor;
@@ -97,10 +95,10 @@ public class ClockPane extends AbstractPane implements ActionListener {
 		labelActualDate.setText(sdf.format(new Date()));
 
 		String alarm;
-		if (processor.nextAlarmTimeString() == null) {
+		if (processor.getGui().getAlarmTimeString() == null) {
 			alarm = "Wecker ist aus";
 		} else {
-			alarm = "Wecker: " + processor.nextAlarmTimeString();
+			alarm = "Wecker: " + processor.getGui().getAlarmTimeString();
 		}
 		labelNextAlarm.setText(alarm);
 
@@ -110,9 +108,10 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		refresh();
 	}
-	
+
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;
 	}
+
 }
