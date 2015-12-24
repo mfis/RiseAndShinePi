@@ -24,6 +24,7 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 	public AlarmSettingsPane(Processor processor) {
 
+		super();
 		this.processor = processor;
 
 		alarmButton = new TouchButton[processor.getAlarms().size()];

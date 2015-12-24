@@ -1,6 +1,9 @@
 package mfi.riseandshinepi.gui.components;
 
 import java.awt.Color;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 
 /**
  * Based on the Clock Component by 'hansolo' Gerrit Grunwald ; Twitter @hansolo_
@@ -10,7 +13,7 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	private static final long serialVersionUID = 1L;
 
 	private final double ANGLE_STEP = 6;
-	private final javax.swing.Timer CLOCK_TIMER = new javax.swing.Timer(100, this);
+	private final javax.swing.Timer clockPointerTimer = new javax.swing.Timer(843, this);
 	private double minutePointerAngle = 0;
 	private double hourPointerAngle = 0;
 	private java.awt.geom.Rectangle2D hourPointer;
@@ -30,17 +33,17 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	private int minute;
 	private int second;
 
+	private Calendar calendar = new GregorianCalendar();
+
 	public AnalogClock() {
 		super();
 		this.setVisible(false);
 		setSize(100, 100);
-
 		init();
-
-		CLOCK_TIMER.start();
 	}
 
 	private void init() {
+
 		// Rotation center
 		this.center = new java.awt.geom.Point2D.Float(getWidth() / 2.0f, getHeight() / 2.0f);
 
@@ -197,45 +200,64 @@ public class AnalogClock extends javax.swing.JComponent implements java.awt.even
 	public void actionPerformed(java.awt.event.ActionEvent event) {
 
 		if (!this.isVisible()) {
-			this.setVisible(true);
+			return;
 		}
 
-		if (event.getSource().equals(CLOCK_TIMER)) {
-
-			// Hours
-			hour = java.util.Calendar.getInstance().get(java.util.Calendar.HOUR) - this.timeZoneOffsetHour;
-			if (hour > 12) {
-				hour -= 12;
-			}
-			if (hour < 0) {
-				hour += 12;
-			}
-
-			// Minutes
-			minute = java.util.Calendar.getInstance().get(java.util.Calendar.MINUTE) + this.timeZoneOffsetMinute;
-			if (minute > 60) {
-				minute -= 60;
-				hour++;
-			}
-			if (minute < 0) {
-				minute += 60;
-				hour--;
-			}
-
-			// Seconds
-			second = java.util.Calendar.getInstance().get(java.util.Calendar.SECOND);
-
-			// Calculate angles from current hour and minute values
-			hourPointerAngle = hour * ANGLE_STEP * 5 + (0.5) * minute;
-			minutePointerAngle = (double) ((minute * 60) + second) / (double) 10;
-
-			repaint(0, 0, getWidth(), getHeight());
+		if (event.getSource().equals(clockPointerTimer)) {
+			repaintPointer();
 		}
+	}
+
+	private void repaintPointer() {
+
+		calendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
+
+		// Hours
+		hour = calendar.get(java.util.Calendar.HOUR) - this.timeZoneOffsetHour;
+		if (hour > 12) {
+			hour -= 12;
+		}
+		if (hour < 0) {
+			hour += 12;
+		}
+
+		// Minutes
+		minute = calendar.get(java.util.Calendar.MINUTE) + this.timeZoneOffsetMinute;
+		if (minute > 60) {
+			minute -= 60;
+			hour++;
+		}
+		if (minute < 0) {
+			minute += 60;
+			hour--;
+		}
+
+		// Seconds
+		second = calendar.get(java.util.Calendar.SECOND);
+
+		// Calculate angles from current hour and minute values
+		hourPointerAngle = hour * ANGLE_STEP * 5 + (0.5) * minute;
+		minutePointerAngle = (double) ((minute * 60) + second) / (double) 10;
+
+		repaint(0, 0, getWidth(), getHeight());
 	}
 
 	@Override
 	public String toString() {
 		return "Analog Clock";
+	}
+
+	@Override
+	public void setVisible(boolean aFlag) {
+
+		super.setVisible(aFlag);
+
+		if (aFlag) {
+			repaintPointer();
+			clockPointerTimer.start();
+		} else {
+			clockPointerTimer.stop();
+		}
 	}
 
 }

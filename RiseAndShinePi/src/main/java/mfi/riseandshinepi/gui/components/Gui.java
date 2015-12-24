@@ -121,10 +121,15 @@ public class Gui extends JFrame {
 		frame.pack();
 		frame.setVisible(true);
 
-		actualPane = ClockPane.class.getName();
 	}
 
 	public void switchGuiTo(String name) {
+
+		AbstractPane old = getActualPane();
+		if (old != null) {
+			old.setVisible(false);
+		}
+
 		for (Component c : contentPane.getComponents()) {
 			if (c != null && c.getClass().getName().equals(name) && c instanceof AbstractPane) {
 				((AbstractPane) c).refresh();
@@ -132,10 +137,12 @@ public class Gui extends JFrame {
 			}
 		}
 		((CardLayout) contentPane.getLayout()).show(contentPane, name);
+		contentPane.setVisible(true);
 		actualPane = name;
 	}
 
 	public AbstractPane getActualPane() {
+
 		if (StringUtils.isBlank(actualPane)) {
 			return null;
 		}
@@ -145,6 +152,18 @@ public class Gui extends JFrame {
 			}
 		}
 		return null;
+	}
+
+	public void shutdown() {
+
+		if (contentPane != null && contentPane.getComponents() != null) {
+			for (Component c : contentPane.getComponents()) {
+				if (c != null && c instanceof AbstractPane) {
+					// turns off Timers etc
+					c.setVisible(false);
+				}
+			}
+		}
 	}
 
 	public void refreshGuiValues() {

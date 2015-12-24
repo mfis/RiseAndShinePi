@@ -3,6 +3,7 @@ package mfi.riseandshinepi.logic;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 
 public class Alarm {
 
@@ -58,7 +59,7 @@ public class Alarm {
 
 	public void hasBeenTriggered() {
 
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar)) {
 			hasBeenTriggered = true;
 		}
@@ -122,8 +123,8 @@ public class Alarm {
 			return;
 		}
 
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
-		cachedNextAlarm = nextAlarmTime(System.currentTimeMillis());
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
+		cachedNextAlarm = nextAlarmTime(CurrentDateTime.getInstance().getMillis());
 		hasBeenTriggered = false;
 		cachedNextAlarmString = nextAlarmTimeStringFor(cachedNextAlarm, actualCalendar);
 
@@ -138,7 +139,7 @@ public class Alarm {
 			return;
 		}
 
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
 		if (newDayInYear != dayInYear) {
 			dayInYear = newDayInYear;

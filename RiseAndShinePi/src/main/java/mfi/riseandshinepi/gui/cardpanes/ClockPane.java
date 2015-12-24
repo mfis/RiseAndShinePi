@@ -29,12 +29,13 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	private JLabel labelNextAlarm;
 	private Processor processor;
 	private SimpleDateFormat sdf = Utils.getSimpleDateFormat("EEEE, d.M.");
+	private AnalogClock clock = new AnalogClock();
 
 	public ClockPane(Processor processor) {
 
+		super();
 		this.processor = processor;
 
-		AnalogClock clock = new AnalogClock();
 		clock.setName("clock");
 		clock.setPreferredSize(new java.awt.Dimension(240, 240));
 		clock.setBounds(0, 0, 240, 240);
@@ -112,6 +113,14 @@ public class ClockPane extends AbstractPane implements ActionListener {
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;
+	}
+
+	@Override
+	public void setVisible(boolean aFlag) {
+		super.setVisible(aFlag);
+		if (clock != null) {
+			clock.setVisible(aFlag);
+		}
 	}
 
 }

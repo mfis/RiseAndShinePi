@@ -3,10 +3,8 @@ package mfi.riseandshinepi.gui.cardpanes;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.Timer;
-
 import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.logic.Processor;
@@ -19,6 +17,8 @@ public class BlankPane extends AbstractPane implements ActionListener {
 	private Color color = Color.BLACK;
 
 	public BlankPane(Processor processor) {
+
+		super();
 
 		button = new TouchButton("");
 		button.setBounds(0, 0, Gui.applicationSize.width, Gui.applicationSize.height);
@@ -55,7 +55,7 @@ public class BlankPane extends AbstractPane implements ActionListener {
 	public void refresh() {
 		// noop
 	}
-	
+
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;

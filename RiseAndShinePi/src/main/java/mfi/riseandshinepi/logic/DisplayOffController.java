@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
 import java.util.List;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 
 public class DisplayOffController {
 
@@ -37,7 +38,7 @@ public class DisplayOffController {
 	public DisplayOffController(Processor processor) {
 		now = new Date();
 		this.processor = processor;
-		lastActivity = System.currentTimeMillis();
+		lastActivity = CurrentDateTime.getInstance().getMillis();
 	}
 
 	public void calculate(Calendar nextAlarm) {
@@ -59,7 +60,7 @@ public class DisplayOffController {
 		calculatedForLastActivity = lastActivity;
 		calculatedForNextAlarm = nextAlarm != null ? nextAlarm.getTimeInMillis() : null;
 
-		long nowInLong = System.currentTimeMillis();
+		long nowInLong = CurrentDateTime.getInstance().getMillis();
 
 		now.setTime(nowInLong);
 
@@ -111,7 +112,7 @@ public class DisplayOffController {
 	}
 
 	public void newActivity() {
-		this.lastActivity = System.currentTimeMillis();
+		this.lastActivity = CurrentDateTime.getInstance().getMillis();
 	}
 
 	public int getDisplayOnFixHour() {

@@ -5,5 +5,4 @@
 - 'good morning' etc text on alarm pane
 - no additional backlight offset if next alarm is nearby 
 
-- centralize System.currentTimeMillies()
-- unify WeatherController->LocalTime.now() and Processor->actualCalendar
+- refactor alarm calculations to own class 

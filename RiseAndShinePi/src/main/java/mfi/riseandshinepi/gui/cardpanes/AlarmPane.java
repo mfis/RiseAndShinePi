@@ -5,12 +5,12 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
-
+import java.util.Date;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
-
 import mfi.riseandshinepi.gui.components.AnalogClock;
 import mfi.riseandshinepi.gui.components.TouchButton;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 import mfi.riseandshinepi.logic.Processor;
 
 public class AlarmPane extends AbstractPane implements ActionListener {
@@ -27,13 +27,15 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 	private TouchButton musicOffButton;
 	private TouchButton alarmOffButton;
 	private TouchButton switchButton;
+	private Date date = new Date();
+	private AnalogClock clock = new AnalogClock();
 
 	public AlarmPane(Processor processor) {
 
+		super();
 		this.processor = processor;
 		this.setBackground(Color.BLACK);
 
-		AnalogClock clock = new AnalogClock();
 		clock.setName("clock");
 		clock.setPreferredSize(new java.awt.Dimension(140, 140));
 		clock.setBounds(50, 5, 140, 140);
@@ -99,11 +101,12 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 	@Override
 	public void refresh() {
 
-		actualDate.setText(sdfActualDate.format(processor.getActualCalendar().getTime()));
+		date.setTime(CurrentDateTime.getInstance().getMillis());
+		actualDate.setText(sdfActualDate.format(date.getTime()));
 		weatherActualTemperature.setText(processor.getWeatherController().getActualTemperature());
 		if (processor.getWeatherController().isDataAvailable()) {
-			weatherTodayTemperature.setText("Heute " + processor.getWeatherController().getTodayMinTemperature()
-					+ " bis " + processor.getWeatherController().getTodayMaxTemperature());
+			weatherTodayTemperature.setText(
+					"Heute " + processor.getWeatherController().getTodayMinTemperature() + " bis " + processor.getWeatherController().getTodayMaxTemperature());
 		} else {
 			weatherTodayTemperature.setText("");
 		}
@@ -156,6 +159,14 @@ public class AlarmPane extends AbstractPane implements ActionListener {
 	@Override
 	public boolean showsWeatherInformation() {
 		return true;
+	}
+
+	@Override
+	public void setVisible(boolean aFlag) {
+		super.setVisible(aFlag);
+		if (clock != null) {
+			clock.setVisible(aFlag);
+		}
 	}
 
 }

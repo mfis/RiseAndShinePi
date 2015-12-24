@@ -15,7 +15,7 @@ public class ExitButtonMouseListener extends AbstractLongClickMouseListener {
 
 	@Override
 	public void longClick() {
-		getProcessor().exit();
+		getProcessor().shutdown();
 	}
 
 }

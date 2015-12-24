@@ -12,6 +12,7 @@ import mfi.riseandshinepi.gui.cardpanes.VolumeAndBacklightSettingsPane;
 import mfi.riseandshinepi.gui.components.Gui;
 import mfi.riseandshinepi.hardware.AudioPlayer;
 import mfi.riseandshinepi.hardware.Bulb;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 import mfi.riseandshinepi.hardware.DisplayBacklight;
 
 public class Processor implements Constants {
@@ -23,10 +24,10 @@ public class Processor implements Constants {
 	private AudioPlayer audioPlayer;
 
 	private Calendar actualCalendar;
-	private Timer alarmTimer;
 	private DisplayOffController displayOffController;
 	private WeatherController weatherController;
 
+	private Timer alarmTimer;
 	private Timer weatherTimer;
 
 	private List<Alarm> alarms;
@@ -46,8 +47,6 @@ public class Processor implements Constants {
 																	// porperties
 		alarms.add(new Alarm(11, 30, false, true, true, false)); // FIXME:
 																	// porperties
-		// (only
-		// time)
 		alarmTimer = new Timer();
 		weatherTimer = new Timer();
 	}
@@ -59,10 +58,11 @@ public class Processor implements Constants {
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
-		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 5003); // every 5
-																	// sec
-		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60); // every
-																				// min
+
+		// every 5 sec
+		alarmTimer.schedule(new AlarmTimerTask(this), 1003, 5003);
+		// every min
+		weatherTimer.schedule(new WeatherTimerTask(this), 1000 * 2, 1000 * 60);
 	}
 
 	private void initializeHardware() {
@@ -94,7 +94,6 @@ public class Processor implements Constants {
 
 	public synchronized Alarm calculateNextAlarm() {
 
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
 		Alarm next = null;
 		for (Alarm a : alarms) {
 			Calendar aNextAlarm = a.getCachedNextAlarm();
@@ -117,7 +116,7 @@ public class Processor implements Constants {
 
 	public void processAlarmTimer() {
 
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		Alarm next = calculateNextAlarm();
 
 		if (next == null) {
@@ -146,12 +145,12 @@ public class Processor implements Constants {
 	public void processDisplayAutoOff() {
 
 		if (gui.getActualPaneName().equals(BlankPane.class.getName())) {
-			if (displayOffController.autoOnNow(System.currentTimeMillis())) {
+			if (displayOffController.autoOnNow(CurrentDateTime.getInstance().getMillis())) {
 				switchGuiTo(ClockPane.class.getName());
 			}
 		} else {
 			if (!bulb.isState()) {
-				if (displayOffController.autoOffNow(System.currentTimeMillis())) {
+				if (displayOffController.autoOffNow(CurrentDateTime.getInstance().getMillis())) {
 					switchGuiTo(BlankPane.class.getName());
 				}
 			}
@@ -182,7 +181,7 @@ public class Processor implements Constants {
 		}
 
 		// mark overtaken alarms as triggered
-		actualCalendar.setTimeInMillis(System.currentTimeMillis());
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		for (Alarm a : alarms) {
 			Calendar alarmCal = a.getCachedNextAlarm();
 			if (alarmCal != null) {
@@ -213,7 +212,7 @@ public class Processor implements Constants {
 		displayBacklight.useOffset(offset);
 	}
 
-	public void exit() {
+	public void shutdown() {
 
 		if (alarmNowOn) {
 			alarmOff();
@@ -229,10 +228,12 @@ public class Processor implements Constants {
 		turnOffBulb();
 		displayBacklight.dimToValue(DisplayBacklight.MAX_VALUE);
 
+		gui.shutdown();
 		if (!isDevelopmentMode()) {
 			try {
 				gui.getDevice().setFullScreenWindow(null);
 			} catch (Exception e) {
+				// noop
 			}
 		}
 
@@ -245,16 +246,8 @@ public class Processor implements Constants {
 		return developmentMode;
 	}
 
-	public void setDevelopmentMode(boolean developmentMode) {
-		this.developmentMode = developmentMode;
-	}
-
 	public Gui getGui() {
 		return gui;
-	}
-
-	public void setGui(Gui gui) {
-		this.gui = gui;
 	}
 
 	public List<Alarm> getAlarms() {
@@ -279,10 +272,6 @@ public class Processor implements Constants {
 
 	public WeatherController getWeatherController() {
 		return weatherController;
-	}
-
-	public Calendar getActualCalendar() {
-		return actualCalendar;
 	}
 
 }

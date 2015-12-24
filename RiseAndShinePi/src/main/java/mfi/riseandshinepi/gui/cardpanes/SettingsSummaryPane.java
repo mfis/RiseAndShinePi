@@ -1,7 +1,6 @@
 package mfi.riseandshinepi.gui.cardpanes;
 
 import java.awt.Color;
-
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.listeners.ExitButtonMouseListener;
 import mfi.riseandshinepi.logic.Processor;
@@ -22,6 +21,7 @@ public class SettingsSummaryPane extends AbstractPane {
 
 	public SettingsSummaryPane(Processor processor) {
 
+		super();
 		this.processor = processor;
 
 		alarmSettingsButton = new TouchButton("Wecker einstellen");
@@ -47,7 +47,7 @@ public class SettingsSummaryPane extends AbstractPane {
 		weatherButton.addActionListener(processor.getGui().getSwitchButtonListener());
 		weatherButton.setName(AlarmPane.class.getName());
 		this.add(weatherButton);
-		
+
 		exitButton = new TouchButton("Ausschalten (halten)");
 		exitButton.setBounds(0, 220, 240, 40);
 		exitButton.addMouseListener(new ExitButtonMouseListener(processor));
@@ -68,7 +68,7 @@ public class SettingsSummaryPane extends AbstractPane {
 	public void refresh() {
 		// noop
 	}
-	
+
 	@Override
 	public boolean showsWeatherInformation() {
 		return false;

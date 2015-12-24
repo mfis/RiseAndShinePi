@@ -34,6 +34,7 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 
 	public VolumeAndBacklightSettingsPane(Processor processor) {
 
+		super();
 		this.processor = processor;
 
 		displayBacklightLabel = new TouchLabel[displayBacklightLabelText.length];

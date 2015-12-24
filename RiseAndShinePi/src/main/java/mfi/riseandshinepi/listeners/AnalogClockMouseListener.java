@@ -1,5 +1,6 @@
 package mfi.riseandshinepi.listeners;
 
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 import mfi.riseandshinepi.logic.Processor;
 
 public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
@@ -12,8 +13,8 @@ public class AnalogClockMouseListener extends AbstractLongClickMouseListener {
 
 	@Override
 	public void shortClick() {
-		if (System.currentTimeMillis() - lastShortClick > 500) {
-			lastShortClick = System.currentTimeMillis();
+		if (CurrentDateTime.getInstance().getMillis() - lastShortClick > 500) {
+			lastShortClick = CurrentDateTime.getInstance().getMillis();
 			getProcessor().toggleBulb();
 		}
 	}

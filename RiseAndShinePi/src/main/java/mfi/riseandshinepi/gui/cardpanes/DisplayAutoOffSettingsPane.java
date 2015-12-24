@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import mfi.riseandshinepi.gui.components.TouchButton;
 import mfi.riseandshinepi.gui.components.TouchLabel;
 import mfi.riseandshinepi.logic.ApplicationProperties;
@@ -32,6 +31,7 @@ public class DisplayAutoOffSettingsPane extends AbstractPane implements ActionLi
 
 	public DisplayAutoOffSettingsPane(Processor processor) throws HeadlessException {
 
+		super();
 		this.processor = processor;
 
 		displayOnLabel = new TouchLabel[displayOnLabelText.length];

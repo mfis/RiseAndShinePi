@@ -1,6 +1,9 @@
 package mfi.riseandshinepi.logic;
 
 import java.time.LocalTime;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import mfi.riseandshinepi.hardware.CurrentDateTime;
 import mfi.riseandshinepi.webservices.YahooWeatherWebService;
 import mfi.riseandshinepi.webservices.YahooWeatherWebService.Language;
 import mfi.riseandshinepi.webservices.YahooWeatherWebService.TemperatureUnit;
@@ -16,6 +19,10 @@ public class WeatherController {
 
 	private YahooWeatherWebService weatherWebService;
 
+	private Calendar calendar = new GregorianCalendar();
+
+	private LocalTime localTime;
+
 	public WeatherController(Processor processor) {
 
 		this.processor = processor;
@@ -29,13 +36,13 @@ public class WeatherController {
 
 	public synchronized void refreshWeather(boolean forceRefresh) {
 
-		if ((System.currentTimeMillis() - lastRequest) < 1000 * 31) {
+		if ((CurrentDateTime.getInstance().getMillis() - lastRequest) < 1000 * 31) {
 			return;
 		}
 
 		long refreshRate = (processor.getGui().isActualPaneShowingWeatherInformation() || forceRefresh) ? (1000 * 60 * 10) : (1000 * 60 * 120);
 
-		if ((System.currentTimeMillis() - lastDataAvailable) < refreshRate) {
+		if ((CurrentDateTime.getInstance().getMillis() - lastDataAvailable) < refreshRate) {
 			return;
 		}
 
@@ -46,10 +53,10 @@ public class WeatherController {
 					if (processor.isDevelopmentMode()) {
 						System.out.println("CALLING WEATHER");
 					}
-					lastRequest = System.currentTimeMillis();
+					lastRequest = CurrentDateTime.getInstance().getMillis();
 					weatherWebService.weatherCall();
 					if (weatherWebService.isDataAvailable()) {
-						lastDataAvailable = System.currentTimeMillis();
+						lastDataAvailable = CurrentDateTime.getInstance().getMillis();
 					}
 					processor.getGui().refreshGuiValues();
 				}
@@ -93,8 +100,9 @@ public class WeatherController {
 		if (weatherWebService.getSunrise() == null || weatherWebService.getSunset() == null) {
 			return false;
 		}
-		LocalTime lc = LocalTime.now();
-		return lc.isAfter(weatherWebService.getSunrise()) && lc.isBefore(weatherWebService.getSunset());
+		calendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
+		localTime = LocalTime.of(calendar.get(java.util.Calendar.HOUR), calendar.get(java.util.Calendar.MINUTE));
+		return localTime.isAfter(weatherWebService.getSunrise()) && localTime.isBefore(weatherWebService.getSunset());
 	}
 
 }

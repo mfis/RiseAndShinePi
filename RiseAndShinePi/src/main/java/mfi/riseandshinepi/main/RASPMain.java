@@ -1,7 +1,6 @@
 package mfi.riseandshinepi.main;
 
 import javax.swing.SwingUtilities;
-
 import mfi.riseandshinepi.logic.Processor;
 
 public class RASPMain {
