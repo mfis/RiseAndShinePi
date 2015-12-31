@@ -24,7 +24,6 @@ public class TimestampTest {
 
 	private static void test(int iterations, boolean sysout) {
 
-		// FIXME: l0 with Singleton
 		// Proof, that Singleton with timer is faster than
 		// System.currentTimeMillis()
 

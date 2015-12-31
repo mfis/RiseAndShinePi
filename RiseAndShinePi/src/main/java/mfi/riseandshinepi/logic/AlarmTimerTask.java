@@ -30,7 +30,7 @@ public class AlarmTimerTask extends TimerTask {
 			}
 		}
 
-		processor.processAlarmTimer();
+		processor.getAlarmController().processAlarmTimer();
 		processor.processDisplayAutoOff();
 	}
 

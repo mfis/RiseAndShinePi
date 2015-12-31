@@ -1,9 +1,5 @@
 package mfi.riseandshinepi.logic;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Timer;
 import mfi.riseandshinepi.gui.cardpanes.AlarmPane;
 import mfi.riseandshinepi.gui.cardpanes.BlankPane;
@@ -23,30 +19,23 @@ public class Processor implements Constants {
 	private Bulb bulb;
 	private AudioPlayer audioPlayer;
 
-	private Calendar actualCalendar;
 	private DisplayOffController displayOffController;
 	private WeatherController weatherController;
+	private AlarmController alarmController;
 
 	private Timer alarmTimer;
 	private Timer weatherTimer;
 
-	private List<Alarm> alarms;
 	private boolean alarmNowOn = false;
 
 	public Processor(boolean developmentMode) {
+
 		super();
 		ApplicationProperties.init();
-		actualCalendar = new GregorianCalendar();
+
 		this.developmentMode = developmentMode;
 		displayBacklight = new DisplayBacklight(this);
 		bulb = new Bulb(this);
-		alarms = new LinkedList<Alarm>();
-		alarms.add(new Alarm(5, 12, true, false, false, false)); // FIXME:
-																	// porperties
-		alarms.add(new Alarm(9, 0, false, false, false, false)); // FIXME:
-																	// porperties
-		alarms.add(new Alarm(11, 30, false, true, true, false)); // FIXME:
-																	// porperties
 		alarmTimer = new Timer();
 		weatherTimer = new Timer();
 	}
@@ -55,6 +44,7 @@ public class Processor implements Constants {
 		displayOffController = new DisplayOffController(this);
 		displayOffController.newActivity();
 		weatherController = new WeatherController(this);
+		alarmController = new AlarmController(this);
 		gui = new Gui(this);
 		gui.paintGui();
 		initializeHardware();
@@ -83,63 +73,13 @@ public class Processor implements Constants {
 		}
 
 		if (name.equals(ClockPane.class.getName())) {
-			calculateNextAlarm();
+			alarmController.calculateNextAlarm();
 		}
 
 		gui.switchGuiTo(name);
 
 		weatherController.refreshWeather(true);
 		checkBacklightOffset();
-	}
-
-	public synchronized Alarm calculateNextAlarm() {
-
-		Alarm next = null;
-		for (Alarm a : alarms) {
-			Calendar aNextAlarm = a.getCachedNextAlarm();
-			if (aNextAlarm != null) {
-				if (next == null) {
-					next = a;
-				} else {
-					if (aNextAlarm.before(next.getCachedNextAlarm())) {
-						next = a;
-					}
-				}
-			}
-		}
-
-		displayOffController.calculate(next != null ? next.getCachedNextAlarm() : null);
-		gui.setAlarmTimeString(next != null ? next.getCachedNextAlarmString() : null);
-
-		return next;
-	}
-
-	public void processAlarmTimer() {
-
-		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
-		Alarm next = calculateNextAlarm();
-
-		if (next == null) {
-			if (alarmNowOn) {
-				alarmOff();
-			}
-			return;
-		}
-
-		// If alarm is on more than an hour, turn off
-		if (alarmNowOn && (next.getCachedNextAlarm().getTimeInMillis() + (oneHourInMilliSeconds * 2)) < actualCalendar.getTimeInMillis()) {
-			alarmOff();
-			return;
-		}
-
-		if (alarmNowOn) {
-			return;
-		}
-
-		if (!next.getCachedNextAlarm().after(actualCalendar)) {
-			alarmOn(next);
-			return;
-		}
 	}
 
 	public void processDisplayAutoOff() {
@@ -158,7 +98,7 @@ public class Processor implements Constants {
 
 	}
 
-	private void alarmOn(Alarm alarm) {
+	public void alarmOn(Alarm alarm) {
 
 		if (alarmNowOn) {
 			return;
@@ -180,19 +120,9 @@ public class Processor implements Constants {
 			audioPlayer.stop();
 		}
 
-		// mark alarms incl overtaken ones alarms as triggered and stopped
-		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
-		for (Alarm a : alarms) {
-			Calendar alarmCal = a.getCachedNextAlarm();
-			if (alarmCal != null) {
-				if (!alarmCal.after(actualCalendar)) {
-					a.hasBeenTriggered();
-					a.hasBeenStopped();
-				}
-			}
-		}
+		alarmController.markForetimeAlarmsAsStopped();
 
-		calculateNextAlarm();
+		alarmController.calculateNextAlarm();
 	}
 
 	public void turnOffBulb() {
@@ -251,10 +181,6 @@ public class Processor implements Constants {
 		return gui;
 	}
 
-	public List<Alarm> getAlarms() {
-		return alarms;
-	}
-
 	public boolean isAlarmNowOn() {
 		return alarmNowOn;
 	}
@@ -273,6 +199,10 @@ public class Processor implements Constants {
 
 	public WeatherController getWeatherController() {
 		return weatherController;
+	}
+
+	public AlarmController getAlarmController() {
+		return alarmController;
 	}
 
 }

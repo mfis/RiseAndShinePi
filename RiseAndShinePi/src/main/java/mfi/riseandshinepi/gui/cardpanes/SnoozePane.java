@@ -5,16 +5,12 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 import javax.swing.BorderFactory;
 import javax.swing.JDesktopPane;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import javax.swing.Timer;
 import mfi.riseandshinepi.gui.components.TouchButton;
-import mfi.riseandshinepi.hardware.CurrentDateTime;
-import mfi.riseandshinepi.logic.Alarm;
 import mfi.riseandshinepi.logic.Processor;
 
 public class SnoozePane extends AbstractPane implements ActionListener {
@@ -157,18 +153,7 @@ public class SnoozePane extends AbstractPane implements ActionListener {
 		processor.alarmOff();
 
 		if (snoozeMinutes > 0) {
-			// FIXME: refactor to alarm controller class
-			for (Alarm alarm : processor.getAlarms()) {
-				if (alarm.isSnooze()) {
-					Calendar calendar = new GregorianCalendar();
-					calendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
-					calendar.add(Calendar.MINUTE, snoozeMinutes);
-					alarm.setHour(calendar.get(Calendar.HOUR_OF_DAY));
-					alarm.setMinute(calendar.get(Calendar.MINUTE));
-					alarm.setActive(true);
-					break;
-				}
-			}
+			processor.getAlarmController().activateSnoozeAlarm(snoozeMinutes);
 		}
 
 		processor.switchGuiTo(ClockPane.class.getName());

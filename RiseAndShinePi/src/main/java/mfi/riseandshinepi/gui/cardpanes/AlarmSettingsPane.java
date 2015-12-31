@@ -27,9 +27,9 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 		super();
 		this.processor = processor;
 
-		alarmButton = new TouchButton[processor.getAlarms().size()];
-		for (int i = 0; i < processor.getAlarms().size(); i++) {
-			alarmButton[i] = new TouchButton(processor.getAlarms().get(0).toString());
+		alarmButton = new TouchButton[processor.getAlarmController().getAlarms().size()];
+		for (int i = 0; i < processor.getAlarmController().getAlarms().size(); i++) {
+			alarmButton[i] = new TouchButton(processor.getAlarmController().getAlarms().get(0).toString());
 			alarmButton[i].setBounds(0, i * 42, 240, 40);
 			alarmButton[i].setName(String.valueOf(i));
 			alarmButton[i].addActionListener(this);
@@ -40,7 +40,7 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 		for (int i = 0; i < settingButton.length; i++) {
 			settingButton[i] = new TouchButton(settingButtonText[i]);
 			int x = i % 2 == 0 ? 0 : 121;
-			int y = (processor.getAlarms().size() * 42) + (i / 2 * 42) + 12;
+			int y = (processor.getAlarmController().getAlarms().size() * 42) + (i / 2 * 42) + 12;
 			settingButton[i].setBounds(x, y, 119, 40);
 			settingButton[i].setName(settingButtonName[i]);
 			settingButton[i].addActionListener(this);
@@ -63,10 +63,10 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 		if (Utils.isStringValueNumeric(name)) {
 			editIndex = Integer.parseInt(name);
-			processor.getAlarms().get(editIndex).setActive(!processor.getAlarms().get(editIndex).isActive());
+			processor.getAlarmController().getAlarms().get(editIndex).setActive(!processor.getAlarmController().getAlarms().get(editIndex).isActive());
 		} else {
-			int h = processor.getAlarms().get(editIndex).getHour();
-			int m = processor.getAlarms().get(editIndex).getMinute();
+			int h = processor.getAlarmController().getAlarms().get(editIndex).getHour();
+			int m = processor.getAlarmController().getAlarms().get(editIndex).getMinute();
 			switch (name) {
 			case "+h":
 				if (h == 23) {
@@ -97,15 +97,16 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 				}
 				break;
 			case "interval":
-				processor.getAlarms().get(editIndex).setOnWeekdaysOnly(!processor.getAlarms().get(editIndex).isOnWeekdaysOnly());
-				processor.getAlarms().get(editIndex).setOnce(false);
+				processor.getAlarmController().getAlarms().get(editIndex)
+						.setOnWeekdaysOnly(!processor.getAlarmController().getAlarms().get(editIndex).isOnWeekdaysOnly());
+				processor.getAlarmController().getAlarms().get(editIndex).setOnce(false);
 				break;
 			case "once":
-				processor.getAlarms().get(editIndex).setOnce(true);
+				processor.getAlarmController().getAlarms().get(editIndex).setOnce(true);
 				break;
 			}
-			processor.getAlarms().get(editIndex).setHour(h);
-			processor.getAlarms().get(editIndex).setMinute(m);
+			processor.getAlarmController().getAlarms().get(editIndex).setHour(h);
+			processor.getAlarmController().getAlarms().get(editIndex).setMinute(m);
 		}
 		refresh();
 	}
@@ -113,21 +114,21 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 	@Override
 	public void refresh() {
 
-		for (int i = 0; i < processor.getAlarms().size(); i++) {
+		for (int i = 0; i < processor.getAlarmController().getAlarms().size(); i++) {
 			if (editIndex == i) {
-				alarmButton[i].setText("[ " + processor.getAlarms().get(i).toString() + " ]");
+				alarmButton[i].setText("[ " + processor.getAlarmController().getAlarms().get(i).toString() + " ]");
 			} else {
-				alarmButton[i].setText(processor.getAlarms().get(i).toString());
+				alarmButton[i].setText(processor.getAlarmController().getAlarms().get(i).toString());
 			}
-			if (processor.getAlarms().get(i).isActive()) {
+			if (processor.getAlarmController().getAlarms().get(i).isActive()) {
 				alarmButton[i].setActiveLook();
 			} else {
 				alarmButton[i].setInactiveLook();
 			}
 		}
 
-		settingButton[4].setVisible(!processor.getAlarms().get(editIndex).isSnooze());
-		settingButton[5].setVisible(!processor.getAlarms().get(editIndex).isSnooze());
+		settingButton[4].setVisible(!processor.getAlarmController().getAlarms().get(editIndex).isSnooze());
+		settingButton[5].setVisible(!processor.getAlarmController().getAlarms().get(editIndex).isSnooze());
 
 	}
 
