@@ -1,8 +1,3 @@
 - usability: sort +/- buttons
-- feature: snooze function (e.g. with third alarm time which is reserved for snooze)
-- feature: writing user properties out for alarm timers, backlight-off-times etc 
-- 20 sec bulb light after turning off alarm
-- 'good morning' etc text on alarm pane
-- no additional backlight offset if next alarm is nearby 
-
-- refactor alarm calculations to own class 
+- feature: writing user properties out for alarm timers, backlight-off-times etc
+- feature: standard values for properties for first start without properties file 
