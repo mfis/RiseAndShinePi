@@ -23,6 +23,7 @@ import mfi.riseandshinepi.gui.cardpanes.BlankPane;
 import mfi.riseandshinepi.gui.cardpanes.ClockPane;
 import mfi.riseandshinepi.gui.cardpanes.DisplayAutoOffSettingsPane;
 import mfi.riseandshinepi.gui.cardpanes.SettingsSummaryPane;
+import mfi.riseandshinepi.gui.cardpanes.SnoozePane;
 import mfi.riseandshinepi.gui.cardpanes.VolumeAndBacklightSettingsPane;
 import mfi.riseandshinepi.listeners.SwitchButtonListener;
 import mfi.riseandshinepi.logic.Processor;
@@ -36,6 +37,7 @@ public class Gui extends JFrame {
 	private GraphicsDevice device;
 	private ClockPane clockPane;
 	private AlarmPane alarmPane;
+	private SnoozePane snoozePane;
 	private AlarmSettingsPane alarmSettingsPane;
 	private DisplayAutoOffSettingsPane displayAutoOffSettingsPane;
 	private BlankPane blankPane;
@@ -93,6 +95,7 @@ public class Gui extends JFrame {
 
 		clockPane = new ClockPane(processor);
 		alarmPane = new AlarmPane(processor);
+		snoozePane = new SnoozePane(processor);
 		alarmSettingsPane = new AlarmSettingsPane(processor);
 		displayAutoOffSettingsPane = new DisplayAutoOffSettingsPane(processor);
 		blankPane = new BlankPane(processor);
@@ -101,6 +104,7 @@ public class Gui extends JFrame {
 
 		contentPane.add(clockPane, clockPane.getClass().getName());
 		contentPane.add(alarmPane, alarmPane.getClass().getName());
+		contentPane.add(snoozePane, snoozePane.getClass().getName());
 		contentPane.add(alarmSettingsPane, alarmSettingsPane.getClass().getName());
 		contentPane.add(displayAutoOffSettingsPane, displayAutoOffSettingsPane.getClass().getName());
 		contentPane.add(blankPane, blankPane.getClass().getName());

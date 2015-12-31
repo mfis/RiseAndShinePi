@@ -38,6 +38,10 @@ public class BlankPane extends AbstractPane implements ActionListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
+		if (!isVisible()) {
+			return;
+		}
+
 		if (color.equals(Color.BLACK)) {
 			color = Color.WHITE;
 		} else {

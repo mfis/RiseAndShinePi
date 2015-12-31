@@ -95,7 +95,7 @@ public class TimestampTest {
 		long l5 = System.currentTimeMillis();
 		for (int i = 0; i < iterations; i++) {
 			c5.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
-			lt5 = LocalTime.of(c5.get(java.util.Calendar.HOUR), c5.get(java.util.Calendar.MINUTE));
+			lt5 = LocalTime.of(c5.get(java.util.Calendar.HOUR_OF_DAY), c5.get(java.util.Calendar.MINUTE));
 			if (lt5 == null) {
 				System.out.println("l5");
 			}

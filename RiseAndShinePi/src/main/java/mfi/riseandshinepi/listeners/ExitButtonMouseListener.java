@@ -5,7 +5,7 @@ import mfi.riseandshinepi.logic.Processor;
 public class ExitButtonMouseListener extends AbstractLongClickMouseListener {
 
 	public ExitButtonMouseListener(Processor processor) {
-		super(processor, 3000);
+		super(processor, 2000);
 	}
 
 	@Override

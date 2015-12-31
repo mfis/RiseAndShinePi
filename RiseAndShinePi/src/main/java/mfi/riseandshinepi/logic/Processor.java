@@ -180,13 +180,14 @@ public class Processor implements Constants {
 			audioPlayer.stop();
 		}
 
-		// mark overtaken alarms as triggered
+		// mark alarms incl overtaken ones alarms as triggered and stopped
 		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		for (Alarm a : alarms) {
 			Calendar alarmCal = a.getCachedNextAlarm();
 			if (alarmCal != null) {
 				if (!alarmCal.after(actualCalendar)) {
 					a.hasBeenTriggered();
+					a.hasBeenStopped();
 				}
 			}
 		}

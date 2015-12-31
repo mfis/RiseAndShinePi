@@ -26,11 +26,12 @@ public class Alarm {
 	private boolean snooze;
 	private Calendar actualCalendar;
 	private Calendar alarmCalendar;
-	private static SimpleDateFormat sdfHHmm = Utils.getSimpleDateFormat("HH:mm");;
+	private static SimpleDateFormat sdfHHmm = Utils.getSimpleDateFormat("HH:mm");
 	private static SimpleDateFormat sdfEEHHmm = Utils.getSimpleDateFormat("EE, HH:mm");
 	private int dayInYear = -1;
 	private boolean active;
 	private boolean hasBeenTriggered = false;
+	private boolean hasBeenStopped = false;
 
 	private Calendar cachedNextAlarm;
 	private String cachedNextAlarmString;
@@ -47,7 +48,7 @@ public class Alarm {
 		} else {
 			sb.append(onWeekdaysOnly ? "Mo - Fr" : "täglich");
 		}
-		sb.append("   ");
+		sb.append("  ");
 		sb.append(alarmHour < 10 ? "0" : "");
 		sb.append(alarmHour);
 		sb.append(":");
@@ -62,6 +63,15 @@ public class Alarm {
 		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar)) {
 			hasBeenTriggered = true;
+			hasBeenStopped = false;
+		}
+	}
+
+	public void hasBeenStopped() {
+
+		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
+		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar) && hasBeenTriggered) {
+			hasBeenStopped = true;
 		}
 	}
 
@@ -120,12 +130,14 @@ public class Alarm {
 			cachedNextAlarm = null;
 			cachedNextAlarmString = null;
 			hasBeenTriggered = false;
+			hasBeenStopped = false;
 			return;
 		}
 
 		actualCalendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 		cachedNextAlarm = nextAlarmTime(CurrentDateTime.getInstance().getMillis());
 		hasBeenTriggered = false;
+		hasBeenStopped = false;
 		cachedNextAlarmString = nextAlarmTimeStringFor(cachedNextAlarm, actualCalendar);
 
 		int newDayInYear = actualCalendar.get(Calendar.DAY_OF_YEAR);
@@ -147,7 +159,7 @@ public class Alarm {
 			return;
 		}
 
-		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar) && hasBeenTriggered) {
+		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar) && hasBeenTriggered && hasBeenStopped) {
 			if (isOnce()) {
 				setActive(false);
 			}

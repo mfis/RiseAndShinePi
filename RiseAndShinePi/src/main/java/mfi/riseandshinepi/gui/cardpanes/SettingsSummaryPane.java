@@ -73,4 +73,5 @@ public class SettingsSummaryPane extends AbstractPane {
 	public boolean showsWeatherInformation() {
 		return false;
 	}
+
 }

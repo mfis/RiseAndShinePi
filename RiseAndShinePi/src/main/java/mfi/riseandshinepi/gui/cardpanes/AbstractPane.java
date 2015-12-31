@@ -8,14 +8,14 @@ public abstract class AbstractPane extends JDesktopPane {
 
 	private static final long serialVersionUID = 1L;
 
-	public abstract void refresh();
-
-	public abstract boolean showsWeatherInformation();
-
 	public AbstractPane() {
 		super();
 		setVisible(false);
 	}
+
+	public abstract void refresh();
+
+	public abstract boolean showsWeatherInformation();
 
 	@Override
 	public Dimension getPreferredSize() {

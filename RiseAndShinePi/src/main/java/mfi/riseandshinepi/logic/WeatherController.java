@@ -101,7 +101,7 @@ public class WeatherController {
 			return false;
 		}
 		calendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
-		localTime = LocalTime.of(calendar.get(java.util.Calendar.HOUR), calendar.get(java.util.Calendar.MINUTE));
+		localTime = LocalTime.of(calendar.get(java.util.Calendar.HOUR_OF_DAY), calendar.get(java.util.Calendar.MINUTE));
 		return localTime.isAfter(weatherWebService.getSunrise()) && localTime.isBefore(weatherWebService.getSunset());
 	}
 

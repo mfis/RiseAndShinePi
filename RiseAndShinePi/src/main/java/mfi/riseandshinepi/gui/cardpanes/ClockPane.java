@@ -50,7 +50,7 @@ public class ClockPane extends AbstractPane implements ActionListener {
 		clockButton = new TouchButton("");
 		clockButton.setBounds(0, 0, 240, 240);
 		clockButton.addMouseListener(new AnalogClockMouseListener(processor));
-		clockButton.setName(AlarmSettingsPane.class.getName());
+		clockButton.setName("");
 		clockButton.setBackground(Color.BLACK);
 		clockButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		clockButton.add(clockPanel);
