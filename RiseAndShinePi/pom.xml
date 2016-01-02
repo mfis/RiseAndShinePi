@@ -40,10 +40,22 @@
 			<version>1.0</version> </dependency> -->
 	</dependencies>
 
-	<version>2.0.0</version>
+	<version>2.0.1</version>
 	<build>
 		<finalName>RiseAndShinePi</finalName>
 		<plugins>
+			<plugin>
+				<groupId>org.dstovall</groupId>
+				<artifactId>onejar-maven-plugin</artifactId>
+				<version>1.4.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>one-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>		
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -66,4 +78,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<!-- One-Jar is in the googlecode repository -->
+	<pluginRepositories>
+		<pluginRepository>
+			<id>onejar-maven-plugin.googlecode.com</id>
+			<url>http://onejar-maven-plugin.googlecode.com/svn/mavenrepo</url>
+		</pluginRepository>
+	</pluginRepositories>	
 </project>
