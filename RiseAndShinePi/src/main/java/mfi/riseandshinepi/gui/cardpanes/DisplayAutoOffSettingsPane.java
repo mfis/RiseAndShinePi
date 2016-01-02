@@ -20,14 +20,14 @@ public class DisplayAutoOffSettingsPane extends AbstractPane implements ActionLi
 	private TouchLabel[] displayOnLabel;
 	private String[] displayOnLabelText = new String[] { "Display einschalten", "##1 Std vor Weckzeit", "oder um ##2 Uhr" };
 	private TouchButton[] displayOnButton;
-	private String[] displayOnButtonText = new String[] { "+1 Stunde", "-1 Stunde" };
-	private String[] displayOnButtonName = new String[] { "dispOn+h", "dispOn-h" };
+	private String[] displayOnButtonText = new String[] { "-1 Stunde", "+1 Stunde" };
+	private String[] displayOnButtonName = new String[] { "dispOn-h", "dispOn+h" };
 
 	private TouchLabel[] displayOffLabel;
 	private String[] displayOffLabelText = new String[] { "Display ausschalten", "nach ##1 Min Inaktivität", "oder um ##2 Uhr" };
 	private TouchButton[] displayOffButton;
-	private String[] displayOffButtonText = new String[] { "+1 Stunde", "-1 Stunde" };
-	private String[] displayOffButtonName = new String[] { "dispOff+h", "dispOff-h" };
+	private String[] displayOffButtonText = new String[] { "-1 Stunde", "+1 Stunde" };
+	private String[] displayOffButtonName = new String[] { "dispOff-h", "dispOff+h" };
 
 	public DisplayAutoOffSettingsPane(Processor processor) throws HeadlessException {
 

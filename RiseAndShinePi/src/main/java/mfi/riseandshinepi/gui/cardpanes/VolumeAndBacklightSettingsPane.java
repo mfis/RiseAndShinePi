@@ -18,14 +18,14 @@ public class VolumeAndBacklightSettingsPane extends AbstractPane implements Acti
 	private TouchLabel[] displayBacklightLabel;
 	private String[] displayBacklightLabelText = new String[] { "Display-Helligkeit (nachts)", "##1 / " + DisplayBacklight.MAX_VALUE };
 	private TouchButton[] displayOnButton;
-	private String[] displayBacklightButtonText = new String[] { "heller", "dunkler" };
-	private String[] displayBlacklightButtonName = new String[] { "dispBL+", "dispBL-" };
+	private String[] displayBacklightButtonText = new String[] { "dunkler", "heller" };
+	private String[] displayBlacklightButtonName = new String[] { "dispBL-", "dispBL+" };
 
 	private TouchLabel[] volumeLabel;
 	private String[] volumeLabelText = new String[] { "Lautstärke", "##1 %" };
 	private TouchButton[] volumeButton;
-	private String[] volumeButtonText = new String[] { "lauter", "leiser" };
-	private String[] volumeButtonName = new String[] { "vol+", "vol-" };
+	private String[] volumeButtonText = new String[] { "leiser", "lauter" };
+	private String[] volumeButtonName = new String[] { "vol-", "vol+" };
 
 	private TouchButton playerButton;
 	private TouchButton switchButton;

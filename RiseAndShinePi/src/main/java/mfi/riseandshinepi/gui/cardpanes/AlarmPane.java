@@ -53,20 +53,20 @@ public class AlarmPane extends AbstractPane {
 		panel.add(clock);
 
 		weatherActualTemperature = new JLabel("", SwingConstants.CENTER);
-		weatherActualTemperature.setForeground(Color.LIGHT_GRAY);
+		weatherActualTemperature.setForeground(Color.WHITE);
 		weatherActualTemperature.setFont(font);
 		weatherActualTemperature.setBounds(0, 200, 240, 30);
 		panel.add(weatherActualTemperature);
 
 		weatherTodayTemperature = new JLabel("", SwingConstants.CENTER);
-		weatherTodayTemperature.setForeground(Color.LIGHT_GRAY);
+		weatherTodayTemperature.setForeground(Color.WHITE);
 		weatherTodayTemperature.setFont(font);
 		weatherTodayTemperature.setBounds(0, 235, 240, 30);
 		panel.add(weatherTodayTemperature);
 
 		weatherTodayCondition = new JLabel("", SwingConstants.CENTER);
 		weatherTodayCondition.setBounds(0, 255, 240, 30);
-		weatherTodayCondition.setForeground(Color.LIGHT_GRAY);
+		weatherTodayCondition.setForeground(Color.WHITE);
 		weatherTodayCondition.setFont(font);
 		panel.add(weatherTodayCondition);
 
@@ -99,13 +99,11 @@ public class AlarmPane extends AbstractPane {
 
 		if (processor.isAlarmNowOn()) {
 			weatherInfo1.setVisible(false);
-			weatherInfo2.setVisible(false);
 		} else {
 			weatherInfo1.setVisible(true);
-			weatherInfo2.setVisible(true);
-			weatherInfo1.setText(processor.getWeatherController().getWeatherLocation());
-			weatherInfo2.setText(processor.getWeatherController().getProvider());
+			weatherInfo1.setText(processor.getWeatherController().getProvider());
 		}
+		weatherInfo2.setText(processor.getWeatherController().getWeatherLocation());
 	}
 
 	@Override

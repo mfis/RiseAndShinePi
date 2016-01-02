@@ -3,27 +3,26 @@ package mfi.riseandshinepi.logic;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import org.apache.commons.lang3.StringUtils;
 import mfi.riseandshinepi.hardware.CurrentDateTime;
 
 public class Alarm {
 
-	public Alarm(int hour, int minute, boolean onWeekdaysOnly, boolean once, boolean snooze, boolean active) {
+	public Alarm(int hour, int minute, AlarmType alarmType, boolean active, ApplicationProperties property) {
 		this.alarmHour = hour;
 		this.alarmMinute = minute;
-		this.onWeekdaysOnly = onWeekdaysOnly;
-		this.once = once;
-		this.snooze = snooze;
+		this.alarmType = alarmType;
 		this.active = active;
+		this.property = property;
 		alarmCalendar = new GregorianCalendar();
 		actualCalendar = new GregorianCalendar();
 		refreshCache();
 	}
 
+	private ApplicationProperties property;
 	private int alarmHour;
 	private int alarmMinute;
-	private boolean onWeekdaysOnly;
-	private boolean once;
-	private boolean snooze;
+	private AlarmType alarmType;
 	private Calendar actualCalendar;
 	private Calendar alarmCalendar;
 	private static SimpleDateFormat sdfHHmm = Utils.getSimpleDateFormat("HH:mm");
@@ -36,17 +35,21 @@ public class Alarm {
 	private Calendar cachedNextAlarm;
 	private String cachedNextAlarmString;
 
-	@Override
-	public String toString() {
+	public String toDisplayableString() {
 		StringBuilder sb = new StringBuilder(30);
-		if (once) {
-			if (snooze) {
-				sb.append("schlummern");
-			} else {
-				sb.append("einmalig");
-			}
-		} else {
-			sb.append(onWeekdaysOnly ? "Mo - Fr" : "täglich");
+		switch (alarmType) {
+		case DAILY:
+			sb.append("täglich");
+			break;
+		case WEEKDAYS:
+			sb.append("Mo - Fr");
+			break;
+		case ONCE:
+			sb.append("einmalig");
+			break;
+		case SNOOZE:
+			sb.append("schlummern");
+			break;
 		}
 		sb.append("  ");
 		sb.append(alarmHour < 10 ? "0" : "");
@@ -56,6 +59,29 @@ public class Alarm {
 		sb.append(alarmMinute);
 		sb.append(" Uhr");
 		return sb.toString();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder(30);
+		sb.append(property.name());
+		sb.append(";");
+		sb.append(alarmType.name());
+		sb.append(";");
+		sb.append(alarmHour);
+		sb.append("_");
+		sb.append(alarmMinute);
+		sb.append(";");
+		sb.append(active);
+		return sb.toString();
+	}
+
+	public static Alarm fromString(String string) {
+
+		String[] tokens = StringUtils.splitPreserveAllTokens(string, ';');
+		String[] hhmm = StringUtils.splitPreserveAllTokens(tokens[2], '_');
+		return new Alarm(Integer.valueOf(hhmm[0]), Integer.valueOf(hhmm[1]), AlarmType.valueOf(tokens[1]), Boolean.valueOf(tokens[3]),
+				ApplicationProperties.valueOf(tokens[0]));
 	}
 
 	public void hasBeenTriggered() {
@@ -94,7 +120,7 @@ public class Alarm {
 			moveToAlarmTime(alarmCalendar);
 		}
 
-		if (!once && onWeekdaysOnly) {
+		if (alarmType == AlarmType.WEEKDAYS) {
 			while (alarmCalendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || alarmCalendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
 				moveToNextDayAtAlarmTime(alarmCalendar);
 			}
@@ -125,6 +151,8 @@ public class Alarm {
 	}
 
 	private synchronized void refreshCache() {
+
+		ApplicationProperties.valueOf(property.name()).setValue(toString());
 
 		if (!active) {
 			cachedNextAlarm = null;
@@ -160,7 +188,7 @@ public class Alarm {
 		}
 
 		if (cachedNextAlarm != null && !cachedNextAlarm.after(actualCalendar) && hasBeenTriggered && hasBeenStopped) {
-			if (isOnce()) {
+			if (alarmType == AlarmType.ONCE || alarmType == AlarmType.SNOOZE) {
 				setActive(false);
 			}
 			refreshCache();
@@ -198,28 +226,6 @@ public class Alarm {
 		refreshCache();
 	}
 
-	public boolean isOnWeekdaysOnly() {
-		return onWeekdaysOnly;
-	}
-
-	public void setOnWeekdaysOnly(boolean onWeekdaysOnly) {
-		this.onWeekdaysOnly = onWeekdaysOnly;
-		refreshCache();
-	}
-
-	public boolean isOnce() {
-		return once;
-	}
-
-	public void setOnce(boolean once) {
-		this.once = once;
-		refreshCache();
-	}
-
-	public boolean isSnooze() {
-		return snooze;
-	}
-
 	public Calendar getCachedNextAlarm() {
 		checkCache();
 		return cachedNextAlarm;
@@ -236,6 +242,16 @@ public class Alarm {
 
 	public void setActive(boolean active) {
 		this.active = active;
+		refreshCache();
+	}
+
+	public AlarmType getAlarmType() {
+		return alarmType;
+	}
+
+	public void setAlarmType(AlarmType alarmType) {
+		this.alarmType = alarmType;
+		refreshCache();
 	}
 
 }

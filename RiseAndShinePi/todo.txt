@@ -1,3 +1,2 @@
 - usability: sort +/- buttons
-- feature: writing user properties out for alarm timers, backlight-off-times etc
-- feature: standard values for properties for first start without properties file 
+- feature: writing user properties out for backlight-off-times etc

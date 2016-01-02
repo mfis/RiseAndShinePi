@@ -19,12 +19,14 @@ public class AlarmController implements Constants {
 		actualCalendar = new GregorianCalendar();
 		alarms = new LinkedList<Alarm>();
 
-		alarms.add(new Alarm(5, 12, true, false, false, false)); // FIXME:
-																	// porperties
-		alarms.add(new Alarm(9, 0, false, false, false, false)); // FIXME:
-																	// porperties
-		alarms.add(new Alarm(11, 30, false, true, true, false)); // FIXME:
-																	// porperties
+		readAlarmSettings();
+	}
+
+	public void readAlarmSettings() {
+
+		alarms.add(Alarm.fromString(ApplicationProperties.ALARM_1.toString()));
+		alarms.add(Alarm.fromString(ApplicationProperties.ALARM_2.toString()));
+		alarms.add(Alarm.fromString(ApplicationProperties.ALARM_3.toString()));
 	}
 
 	public synchronized Alarm calculateNextAlarm() {
@@ -80,7 +82,7 @@ public class AlarmController implements Constants {
 	public void activateSnoozeAlarm(int minutes) {
 
 		for (Alarm alarm : processor.getAlarmController().getAlarms()) {
-			if (alarm.isSnooze()) {
+			if (alarm.getAlarmType() == AlarmType.SNOOZE) {
 				Calendar calendar = new GregorianCalendar();
 				calendar.setTimeInMillis(CurrentDateTime.getInstance().getMillis());
 				calendar.add(Calendar.MINUTE, minutes);

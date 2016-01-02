@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import mfi.riseandshinepi.gui.components.TouchButton;
+import mfi.riseandshinepi.logic.AlarmType;
 import mfi.riseandshinepi.logic.Processor;
 import mfi.riseandshinepi.logic.Utils;
 
@@ -29,7 +30,7 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 		alarmButton = new TouchButton[processor.getAlarmController().getAlarms().size()];
 		for (int i = 0; i < processor.getAlarmController().getAlarms().size(); i++) {
-			alarmButton[i] = new TouchButton(processor.getAlarmController().getAlarms().get(0).toString());
+			alarmButton[i] = new TouchButton(processor.getAlarmController().getAlarms().get(0).toDisplayableString());
 			alarmButton[i].setBounds(0, i * 42, 240, 40);
 			alarmButton[i].setName(String.valueOf(i));
 			alarmButton[i].addActionListener(this);
@@ -97,12 +98,14 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 				}
 				break;
 			case "interval":
-				processor.getAlarmController().getAlarms().get(editIndex)
-						.setOnWeekdaysOnly(!processor.getAlarmController().getAlarms().get(editIndex).isOnWeekdaysOnly());
-				processor.getAlarmController().getAlarms().get(editIndex).setOnce(false);
+				if (processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() == AlarmType.DAILY) {
+					processor.getAlarmController().getAlarms().get(editIndex).setAlarmType(AlarmType.WEEKDAYS);
+				} else {
+					processor.getAlarmController().getAlarms().get(editIndex).setAlarmType(AlarmType.DAILY);
+				}
 				break;
 			case "once":
-				processor.getAlarmController().getAlarms().get(editIndex).setOnce(true);
+				processor.getAlarmController().getAlarms().get(editIndex).setAlarmType(AlarmType.ONCE);
 				break;
 			}
 			processor.getAlarmController().getAlarms().get(editIndex).setHour(h);
@@ -116,9 +119,9 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 
 		for (int i = 0; i < processor.getAlarmController().getAlarms().size(); i++) {
 			if (editIndex == i) {
-				alarmButton[i].setText("[ " + processor.getAlarmController().getAlarms().get(i).toString() + " ]");
+				alarmButton[i].setText("[ " + processor.getAlarmController().getAlarms().get(i).toDisplayableString() + " ]");
 			} else {
-				alarmButton[i].setText(processor.getAlarmController().getAlarms().get(i).toString());
+				alarmButton[i].setText(processor.getAlarmController().getAlarms().get(i).toDisplayableString());
 			}
 			if (processor.getAlarmController().getAlarms().get(i).isActive()) {
 				alarmButton[i].setActiveLook();
@@ -127,8 +130,8 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 			}
 		}
 
-		settingButton[4].setVisible(!processor.getAlarmController().getAlarms().get(editIndex).isSnooze());
-		settingButton[5].setVisible(!processor.getAlarmController().getAlarms().get(editIndex).isSnooze());
+		settingButton[4].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() == AlarmType.SNOOZE);
+		settingButton[5].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() == AlarmType.SNOOZE);
 
 	}
 

@@ -25,6 +25,9 @@ public enum ApplicationProperties {
 	WEATHER_SERVICE_LOCATION, //
 	WEATHER_SERVICE_UNIT, //
 	SPEAKER_VOLUME_PERCENT, //
+	ALARM_1, //
+	ALARM_2, //
+	ALARM_3, //
 	; //
 
 	private String value = null;
