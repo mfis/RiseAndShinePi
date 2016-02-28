@@ -130,8 +130,8 @@ public class AlarmSettingsPane extends AbstractPane implements ActionListener {
 			}
 		}
 
-		settingButton[4].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() == AlarmType.SNOOZE);
-		settingButton[5].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() == AlarmType.SNOOZE);
+		settingButton[4].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() != AlarmType.SNOOZE);
+		settingButton[5].setVisible(processor.getAlarmController().getAlarms().get(editIndex).getAlarmType() != AlarmType.SNOOZE);
 
 	}
 

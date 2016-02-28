@@ -28,7 +28,7 @@ public class DisplayBacklight {
 
 		actualValue = value;
 
-		if (useOffset && (value + OFFSET) <= MAX_VALUE) {
+		if (useOffset && (value + OFFSET) <= MAX_VALUE && value > 0) {
 			value = value + OFFSET;
 		}
 
